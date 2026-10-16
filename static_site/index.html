@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NewGov (static edition)</title>
+<style>
+:root{color-scheme:light;--bg:#fcfcfb;--panel:#fff;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6e69;--line:#e4e3de;--bar:#2a78d6;--bar-off:#8b8a84;--plan:#86b6ef;--warn-bg:#fff6e0;--warn-line:#c98500}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#1a1a19;--panel:#222221;--ink:#f0efec;--ink2:#c3c2b7;--muted:#a3a29b;--line:#38372f;--bar:#3987e5;--bar-off:#8b8a84;--plan:#184f95;--warn-bg:#2a2412;--warn-line:#c98500}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#1a1a19;--panel:#222221;--ink:#f0efec;--ink2:#c3c2b7;--muted:#a3a29b;--line:#38372f;--bar:#3987e5;--bar-off:#8b8a84;--plan:#184f95;--warn-bg:#2a2412;--warn-line:#c98500}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:920px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.5rem;margin:0 0 4px}h2{font-size:1.1rem;margin:28px 0 8px}h3{font-size:.95rem;margin:20px 0 4px;color:var(--ink2)}
+.sub{color:var(--ink2);margin:0 0 20px}
+.hero{font-size:3rem;font-weight:700;line-height:1.1;letter-spacing:-.02em}
+.hero small{display:block;font-size:.95rem;font-weight:400;color:var(--ink2);letter-spacing:0}
+.bar-row .bar-row{font-size:.92rem}
+.tabs,.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0}
+button,select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+button[aria-pressed="true"],button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.crumbs{color:var(--ink2);font-size:.9rem;margin:8px 0}
+.crumbs a{color:var(--ink);cursor:pointer;text-decoration:underline}
+.bar-row{display:grid;grid-template-columns:minmax(120px,38%) 1fr auto;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+.bar-row[data-click]{cursor:pointer}.bar-row[data-click]:hover{background:var(--panel)}
+.lab{font-size:.95rem;overflow-wrap:anywhere}.lab em{display:block;font-style:normal;color:var(--muted);font-size:.8rem}
+.track{height:14px}.fill{height:100%;background:var(--bar);border-radius:0 4px 4px 0;min-width:2px}
+.fill.off{background:var(--bar-off)}
+.val{font-variant-numeric:tabular-nums;text-align:right;font-size:.95rem;white-space:nowrap}
+.note{background:var(--warn-bg);border-left:4px solid var(--warn-line);padding:10px 14px;margin:16px 0;font-size:.9rem;border-radius:4px}
+.chart{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0}
+svg text{fill:var(--ink2);font-size:11px}
+.legend{font-size:.85rem;color:var(--ink2);display:flex;gap:16px;flex-wrap:wrap;margin-top:6px}
+.sw{display:inline-block;width:18px;height:0;border-top:3px solid var(--bar);vertical-align:middle;margin-right:6px}.sw.plan{border-top:3px dashed var(--bar)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}th,td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line)}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+details{margin:10px 0;font-size:.9rem;color:var(--ink2)}summary{cursor:pointer}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);padding:4px 8px;border-radius:6px;font-size:.8rem;display:none;z-index:9}
+table.tx td{vertical-align:top}.tx .it{color:var(--muted);font-size:.8rem}
+.kpi{display:flex;gap:24px;flex-wrap:wrap;margin:8px 0 4px}.kpi div{min-width:150px}.kpi b{display:block;font-size:1.5rem;font-variant-numeric:tabular-nums}.kpi span{color:var(--ink2);font-size:.85rem}.kpi span b,.kpi span strong{display:inline;font-size:inherit}
+.chip{display:inline-flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:.85rem;margin-right:6px}.chip a{cursor:pointer;text-decoration:underline}
+footer{margin-top:40px;color:var(--muted);font-size:.85rem}
+@media (max-width:560px){.bar-row{grid-template-columns:1fr auto}.track{grid-column:1/-1;order:3}.hero{font-size:2.3rem}}
+
+:root{--c1:#2a78d6;--c2:#eb6834;--c3:#1baf7a;--c4:#eda100;--c5:#e87ba4;--c6:#008300;--c7:#6250d6;--c8:#e34948}
+main{max-width:1040px}
+.topnav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin:-24px -16px 18px;padding:10px 16px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.topnav .brand{font-weight:700;font-size:1.05rem;margin-right:8px}
+.topnav .tabs{margin:0;gap:4px}
+.topnav button{padding:5px 11px;border-radius:999px;font-size:.92rem}
+.topnav .aux{margin-left:auto;font-size:.82rem;display:flex;gap:12px}.topnav .aux a{color:var(--ink2)}
+.ctl{font-size:.9rem;color:var(--ink2);margin:6px 0}
+.chapters{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 18px}.chapters a{border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:.85rem;text-decoration:none;color:var(--ink);background:var(--panel)}
+.chapter{margin:0 0 54px;scroll-margin-top:64px}.chapter .num{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
+.chapter h2{font-size:1.45rem;margin:2px 0 6px;line-height:1.25}.chapter .lede{font-size:1.05rem;color:var(--ink);margin:0 0 14px;max-width:46em}
+.go{display:inline-block;margin:10px 0 0;font-size:.92rem;font-weight:600}
+.tools{display:flex;gap:8px;justify-content:flex-end;margin:6px 0}.tools button,.dl{font-size:.78rem;padding:2px 9px;color:var(--ink2)}
+.bar-row[data-href]{cursor:pointer}.bar-row[data-href]:hover{background:var(--panel)}
+.related,.jump{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0;font-size:.85rem;color:var(--ink2)}
+.related a,.jump a{border:1px solid var(--line);border-radius:999px;padding:2px 10px;text-decoration:none;color:var(--ink);background:var(--panel);cursor:pointer}
+details.src{border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:8px 12px;margin:14px 0}details.src summary{font-weight:600;color:var(--ink)}
+details.src h4{margin:12px 0 4px;font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+details.src ul{margin:0;padding-left:18px}details.src li{margin:0 0 8px}details.src .about{color:var(--ink2);font-size:.85rem}.sev{font-size:.7rem;border:1px solid currentColor;border-radius:999px;padding:0 6px;margin-left:6px}.sev.high{color:#b3261e}.sev.medium{color:#a15c00}.sev.low{color:var(--muted)}
+.sk{overflow-x:auto}.sk svg{min-width:760px}.sk text{font-size:11.5px;fill:var(--ink)}.sk .halo{stroke:var(--bg);stroke-width:3;paint-order:stroke}.sk path{stroke-opacity:.34}.sk path:hover{stroke-opacity:.7}
+.stack{display:flex;height:16px;border-radius:3px;overflow:hidden;background:var(--line)}.stack i{display:block;height:100%}
+.sw2{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:baseline}
+.cmp{display:grid;grid-template-columns:minmax(160px,30%) 1fr auto;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+@media (max-width:640px){.topnav .aux{margin-left:0}.cmp{grid-template-columns:1fr}}
+.rag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:700;color:#fff}.rag.red{background:#b3261e}.rag.amber{background:#b26a00}.rag.green{background:#1e7d32}
+.hq{display:inline-block;width:1.25em;height:1.25em;line-height:1.25em;text-align:center;border-radius:50%;border:1px solid var(--line);font-size:.75em;font-weight:700;text-decoration:none;vertical-align:middle}.gcat{margin:28px 0 8px;border-bottom:1px solid var(--line)}.sec{margin:26px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--line)}.chip{display:inline-block;padding:2px 10px;border-radius:12px;font-weight:600;font-size:.85em;background:var(--line);color:var(--ink,inherit)}.v-supported{background:#d6efdc}.v-partly{background:#fdf0c9}.v-not_supported{background:#f6d9d6}.v-cannot_test{background:#e4e4e4}.v-answered{background:#dbe7f7}@media(prefers-color-scheme:dark){.v-supported{background:#1e4a2b}.v-partly{background:#5a4a12}.v-not_supported{background:#5a2420}.v-cannot_test{background:#444}.v-answered{background:#2a3f5c}}
+</style>
+<link rel="stylesheet" href="assets/theme.css">
+<link rel="stylesheet" href="assets/dash.css">
+<link rel="stylesheet" href="assets/static.css">
+<script src="assets/static-shim.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/dash.js" defer></script>
+</head>
+<body>
+<main>
+<nav class="topnav" aria-label="Main">
+  <span class="brand">NewGov</span>
+  <span class="cur" id="curtab">The story</span>
+  <button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open the menu"><i></i><span>Menu</span></button>
+  <div class="menu" id="menu">
+  <div class="tabs" role="tablist" id="tabs">
+    <button data-tab="story" aria-pressed="true">The story</button>
+    <button data-tab="people" aria-pressed="false">Workforce</button>
+    <button data-tab="areas" aria-pressed="false">Local Gov</button>
+    <button data-tab="questions" aria-pressed="false">Questions</button>
+    <button data-tab="glossary" aria-pressed="false">Glossary</button>
+  </div>
+  <span class="aux"><a href="#glossary">Glossary</a><a href="#data/years">Data years</a></span>
+  </div>
+</nav>
+<div id="ctlbar" class="ctl">
+  <label>Year <select id="year"></select></label>
+  <label style="margin-left:12px"><input type="checkbox" id="real"> Adjust for inflation (2025-26 prices)</label>
+</div>
+<div class="hero" id="hero"></div>
+<div class="crumbs" id="crumbs"></div>
+<div id="view"></div>
+<div id="note"></div>
+<details class="src"><summary>How to read these numbers</summary>
+ <p><b>Outturn</b> is what was actually spent; <b>plans</b> are what government intends to spend (dashed). <b>Real terms</b> means adjusted for inflation to 2025-26 prices using the Treasury's own deflators. <b>Total Managed Expenditure</b> includes benefits, pensions, debt interest and accounting items, so department figures do not add up to the headline. <b>Payments over £25,000</b> are cash paid to recipients, not accounts figures. Every panel lists its sources and the known problems with them under "Sources and caveats".</p>
+</details>
+<footer>NewGov static edition (the story, Workforce, Local Gov, Questions and Glossary): a snapshot built 16 October 2026 from the database built 2026-10-16. All data are open data published under the Open Government Licence v3.0. There is no SQL console and no postcode lookup in this edition: search is by place name.</footer>
+</main>
+<div id="tip"></div>
+<script>
+const $=s=>document.querySelector(s), state={tab:'story',reach:{by:'departments'},path:[],spendDepts:[],spendInfo:{},dwp:{sel:null},sp:{cat:null,sup:null,area:null,intra:true}};
+const _mf=x=>x.toLocaleString('en-GB',{maximumFractionDigits:x>=100?0:x>=10?1:2});
+const money=(v,sp)=>{if(v==null)return '';const a=Math.abs(v),s=v<0?'\u2212':'',u=(x)=>sp?' '+x:x;      // pounds -> tn, bn, m, k or plain pounds, three significant figures, never a rounded-away zero
+  if(a>=1e12)return s+'£'+_mf(a/1e12)+u('tn');if(a>=1e9)return s+'£'+_mf(a/1e9)+u('bn');if(a>=1e6)return s+'£'+_mf(a/1e6)+u('m');if(a>=1e3)return s+'£'+_mf(a/1e3)+u('k');return s+'£'+_mf(a)};
+const moneyM=(m,sp)=>m==null?'':money(m*1e6,sp);      // input in £ million
+const fmt=m=>moneyM(m,true);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const api=async(p,q={})=>{const my=CUR;const r=await fetch('/api/'+p+'?'+new URLSearchParams(q));if(!r.ok){let m='';try{m=(await r.json()).detail||''}catch(e){}throw new Error(m||(p+' '+r.status))}const j=await r.json();if(my!==CUR)throw new Stale();return j};
+const opts=()=>({year:$('#year').value,real:$('#real').checked});
+const tip=$('#tip');
+document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]');if(t){tip.style.display='block';tip.textContent=t.dataset.tip;tip.style.left=Math.min(e.clientX+12,innerWidth-220)+'px';tip.style.top=e.clientY+14+'px'}else tip.style.display='none'});
+
+const CSV={};let csvN=0;
+function bars(items,o={}){ // items: {label,sub,value,off,key,href,text}; o.csv = file name stem; o.unit = column heading for the value
+  const max=Math.max(...items.map(i=>Math.abs(i.value)),1);
+  let dl='';if(o.csv&&items.length){const id='c'+(++csvN);CSV[id]={name:o.csv,unit:o.unit||'GBP million',items};dl=`<div class="tools"><button class="dl" data-dl="${id}" title="Download these figures as a spreadsheet file">Download CSV</button></div>`}
+  return dl+items.map(i=>`<div class="bar-row" ${i.key!=null?`data-click="${esc(i.key)}" tabindex="0"`:''}${i.href?` data-href="${esc(i.href)}" tabindex="0"`:''}>
+    <div class="lab">${esc(i.label)}${i.sub?`<em>${esc(i.sub)}</em>`:''}</div>
+    <div class="track"><div class="fill ${i.off?'off':''}" style="width:${Math.abs(i.value)/max*100}%" data-tip="${esc(i.label)}: ${i.text||fmt(i.value)}${i.off?' (income / offset)':''}"></div></div>
+    <div class="val">${i.text||fmt(i.value)}</div></div>`).join('')}
+
+function lineChart(series,title,o={}){ // o.fmtv: value formatter (default £ million); o.unit: column heading in the table view
+  const F=o.fmtv||fmt; // series:[{fiscal_year,basis,value}]
+  const W=860,H=220,m={l:60,r:30,t:14,b:26},xs=series.map((_,i)=>m.l+i*(W-m.l-m.r)/Math.max(series.length-1,1));
+  const vmax=Math.max(...series.map(s=>s.value)),vmin=Math.min(0,...series.map(s=>s.value)),y=v=>m.t+(1-(v-vmin)/((vmax-vmin)||1))*(H-m.t-m.b);
+  const seg=(a,b,dash)=>`<polyline fill="none" stroke="var(--bar)" stroke-width="2" ${dash?'stroke-dasharray="5 4"':''} points="${series.slice(a,b).map((s,i)=>xs[a+i]+','+y(s.value)).join(' ')}"/>`;
+  const k=series.findIndex(s=>s.basis==='plans'), cut=k<0?series.length:k;
+  const grid=[0,.5,1].map(f=>{const v=vmin+(vmax-vmin)*f;return `<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${m.l-6}" y="${y(v)+4}" text-anchor="end">${F(v)}</text>`}).join('');
+  const step=Math.max(1,Math.ceil(series.length/10));      // label about ten points, however many there are
+  const dots=series.map((s,i)=>`<circle cx="${xs[i]}" cy="${y(s.value)}" r="9" fill="transparent" data-tip="${s.fiscal_year} (${s.basis}): ${F(s.value)}"/><circle cx="${xs[i]}" cy="${y(s.value)}" r="3.5" fill="var(--bar)" stroke="var(--panel)" stroke-width="2" pointer-events="none"/>${i%step===0||i===series.length-1?`<text x="${xs[i]}" y="${H-8}" text-anchor="middle">${s.fiscal_year}</text>`:''}`).join('');
+  return `<div class="chart"><b>${esc(title)}</b><svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="${esc(title)}">${grid}${seg(0,cut+(k>0?1:0),false)}${k>0?seg(k-1,series.length,true):''}${dots}</svg>
+  <div class="legend"><span><i class="sw"></i>Outturn (actual)</span>${k>=0?'<span><i class="sw plan"></i>Plans (forecast)</span>':''}</div>
+  <details><summary>View as table</summary><table><tr><th>Year</th><th>Basis</th><th class="n">${o.unit||'£ million'}</th></tr>${series.map(s=>`<tr><td>${s.fiscal_year}</td><td>${s.basis}</td><td class="n">${Math.round(s.value).toLocaleString('en-GB')}</td></tr>`).join('')}</table></details></div>`}
+
+
+let CIT={},ISS={},DEPT_GROUP={};
+const srcBox=(refs=[],issueIds=[],title='Sources and caveats')=>{
+  const cs=refs.map(r=>{const [id,ref]=Array.isArray(r)?r:[r,''];const c=CIT[id];return c?`<li><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.title)}</a> — ${esc(c.publisher)}${c.released?', '+esc(c.released):''}${ref?`<div class="about"><b>Used:</b> ${esc(ref)}</div>`:''}<div class="about">${esc(c.about||'')}</div></li>`:''}).join('');
+  const is=issueIds.map(id=>ISS[id]).filter(Boolean).map(i=>`<li><b>${esc(i.title)}</b><span class="sev ${i.severity}">${i.severity}</span><div class="about">${esc(i.impact)}</div><div class="about"><b>What we do:</b> ${esc(i.handling)} <a href="#${esc(i.id)}">Details (${esc(i.id)})</a></div></li>`).join('');
+  if(!cs&&!is)return '';
+  return `<details class="src"><summary>${title} (${refs.length} source${refs.length===1?'':'s'}${is?`, ${issueIds.filter(x=>ISS[x]).length} caveat${issueIds.filter(x=>ISS[x]).length===1?'':'s'}`:''})</summary>${cs?`<h4>Where the numbers come from</h4><ul>${cs}</ul>`:''}${is?`<h4>What to watch when reading them</h4><ul>${is}</ul>`:''}</details>`};
+const related=items=>`<div class="related"><span>Related:</span>${items.filter(Boolean).map(x=>`<a ${x.h?`data-href="${esc(x.h)}"`:''}>${esc(x.t)}</a>`).join('')}</div>`;
+const FCOL=['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#008300','#6250d6','#e34948','#8b8a84','#4aa3c2'];
+const short=n=>String(n).replace(/^\d+\.\s*/,'');
+
+function sankey(d){
+  const W=1060,padT=8,nw=14,gap=7,xL=215,xM=W/2-nw/2,xR=W-250-nw;
+  const mids=d.functions,left=d.departments;
+  const right=[{name:'Bought from suppliers: running costs',total:d.totals.supplier_current,col:'#2a78d6'},{name:'Bought from suppliers: capital projects',total:d.totals.supplier_capital,col:'#1baf7a'},{name:'Paid out another way',sub:'pay, benefits, grants, interest',total:d.totals.other,col:'#8b8a84'}];
+  const nmax=Math.max(left.length,mids.length,right.length),H=560,avail=H-padT*2-(nmax-1)*gap,k=avail/d.totals.total;
+  const place=(nodes,x)=>{let y=padT;nodes.forEach(n=>{n.x=x;n.y=y;n.h=Math.max(n.total*k,1.5);y+=n.h+gap});return nodes};
+  place(left,xL);place(mids,xM);place(right,xR);
+  const lk=d.links,byD={},byF={};left.forEach((n,i)=>{n.i=i;byD[n.name]=n});mids.forEach((n,i)=>{n.i=i;n.col=FCOL[i%FCOL.length];byF[n.name]=n});
+  const outOff={},inOff={};const paths=[];
+  const sorted=[...lk].sort((a,b)=>byD[a.source].i-byD[b.source].i||byF[a.target].i-byF[b.target].i);
+  const inSorted=[...lk].sort((a,b)=>byF[a.target].i-byF[b.target].i||byD[a.source].i-byD[b.source].i);
+  const so=new Map(),to=new Map();sorted.forEach(l=>{const n=byD[l.source];const o=outOff[n.name]||0;so.set(l,o);outOff[n.name]=o+l.value*k});
+  inSorted.forEach(l=>{const n=byF[l.target];const o=inOff[n.name]||0;to.set(l,o);inOff[n.name]=o+l.value*k});
+  const xm1=(xL+nw+xM)/2,xm2=(xM+nw+xR)/2;
+  lk.forEach(l=>{const a=byD[l.source],b=byF[l.target],t=l.value*k,y0=a.y+so.get(l)+t/2,y1=b.y+to.get(l)+t/2;
+    paths.push(`<path d="M${xL+nw},${y0} C${xm1},${y0} ${xm1},${y1} ${xM},${y1}" fill="none" stroke="${b.col}" stroke-width="${Math.max(t,.8)}" data-tip="${esc(a.name)} → ${esc(short(b.name))}: ${fmt(l.value)}"/>`)});
+  const rOff={};let ri=0;const fOut={};
+  d.delivery.forEach(dv=>{const f=byF[dv.function];if(!f)return;let o=fOut[f.name]||0;
+    [[dv.supplier_current,0],[dv.supplier_capital,1],[dv.other,2]].forEach(([v,j])=>{if(v<=0)return;const r=right[j],t=v*k,y0=f.y+o+t/2,ro=rOff[j]||0,y1=r.y+ro+t/2;o+=t;rOff[j]=ro+t;
+      paths.push(`<path d="M${xM+nw},${y0} C${xm2},${y0} ${xm2},${y1} ${xR},${y1}" fill="none" stroke="${f.col}" stroke-width="${Math.max(t,.8)}" data-tip="${esc(short(f.name))} → ${esc(r.name)}: ${fmt(v)}"/>`)});fOut[f.name]=o});
+  const T=d.totals.total;
+  const dn=nm=>nm==='All other departments and bodies'?'All other bodies':nm;
+  const nodeHtml=(n,side,col)=>{const href=n.href?` data-href="${esc(n.href)}" style="cursor:pointer"`:'';const lab=n.h>=11;
+    const rect=`<rect x="${n.x}" y="${n.y}" width="${nw}" height="${n.h}" fill="${col||n.col||'#6f6e69'}" rx="2"${href} data-tip="${esc(short(n.name))}: ${fmt(n.total)} (${(100*n.total/T).toFixed(1)}%)"/>`;
+    if(!lab)return rect;
+    const ty=n.y+n.h/2+4;
+    if(side==='L')return rect+`<text class="halo" x="${n.x-6}" y="${ty}" text-anchor="end">${esc(dn(n.name))}  ${fmt(n.total)}</text><text x="${n.x-6}" y="${ty}" text-anchor="end">${esc(dn(n.name))}  ${fmt(n.total)}</text>`;
+    if(side==='M')return rect+`<text class="halo" x="${n.x+nw+5}" y="${ty}">${esc(short(n.name))}</text><text x="${n.x+nw+5}" y="${ty}">${esc(short(n.name))}</text>`;
+    return rect+`<text x="${n.x+nw+6}" y="${ty-6}">${esc(n.name)}</text><text x="${n.x+nw+6}" y="${ty+9}" style="fill:var(--ink2)">${fmt(n.total)} · ${(100*n.total/T).toFixed(0)}%</text>${n.sub?`<text x="${n.x+nw+6}" y="${ty+23}" style="fill:var(--muted)">${esc(n.sub)}</text>`:''}`};
+  const svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Flow of money from departments to purposes to how it is delivered">${paths.join('')}${left.map(n=>nodeHtml(n,'L','#6f6e69')).join('')}${mids.map(n=>nodeHtml(n,'M')).join('')}${right.map(n=>nodeHtml(n,'R',n.col)).join('')}</svg>`;
+  const th=`<details><summary>View as table</summary><table><tr><th>Purpose</th><th class="n">Total £ million</th><th class="n">Bought from suppliers (running)</th><th class="n">(capital)</th><th class="n">Paid another way</th></tr>${d.delivery.map(x=>`<tr><td>${esc(short(x.function))}</td><td class="n">${Math.round(x.total).toLocaleString('en-GB')}</td><td class="n">${Math.round(x.supplier_current).toLocaleString('en-GB')}</td><td class="n">${Math.round(x.supplier_capital).toLocaleString('en-GB')}</td><td class="n">${Math.round(x.other).toLocaleString('en-GB')}</td></tr>`).join('')}</table></details>`;
+  return `<div class="sk">${svg}</div>${th}`}
+
+async function storyView(){
+  const d=await api('story',{year:'2025-26'}),fl=await api('flow',{year:'2025-26'});
+  const sc=d.scale,sp=d.spenders,pu=d.purposes,de=d.delivery,vi=d.visibility,pl=d.places,re=d.reliability;
+  const g3=sp.groups.slice(0,3),top3=g3.reduce((a,g)=>a+g.share,0);
+  const f1=pu.functions[0],f2=pu.functions[1],sup=de.supplier_current+de.supplier_capital;
+  const chapters=[['scale','1. The scale'],['who','2. Who spends it'],['what','3. What it is for and how it leaves government'],['journeys','4. Five kinds of journey'],['follow','5. What we can follow to the end'],['land','6. Where it lands'],['trust','7. How far to trust it']];
+  const delRows=de.by_function.map((x,i)=>({f:x,i}));
+  const stackRow=x=>{const t=x.total,a=100*x.supplier_current/t,b=100*x.supplier_capital/t,c=100-a-b;return `<div class="cmp" ${''} data-href="#purpose/${esc(x.function)}" style="cursor:pointer"><div>${esc(short(x.function))}<div class="about" style="color:var(--muted);font-size:.8rem">${fmt(t)}</div></div><div class="stack" data-tip="${esc(short(x.function))}: ${a.toFixed(0)}% bought from suppliers (running costs), ${b.toFixed(0)}% capital projects, ${c.toFixed(0)}% paid another way"><i style="width:${a}%;background:#2a78d6"></i><i style="width:${b}%;background:#1baf7a"></i><i style="width:${c}%;background:#8b8a84"></i></div><div class="val" style="font-size:.85rem">${(a+b).toFixed(0)}% via suppliers</div></div>`};
+  const hi=await api('notes');const top=hi.issues.filter(i=>i.severity==='high'&&i.status!=='handled').slice(0,5);
+  return `<div class="chapters">${chapters.map(c=>`<a data-jump="${c[0]}">${c[1]}</a>`).join('')}</div>
+  <section class="chapter" id="scale"><div class="num">Chapter 1</div><h2>In 2025-26 the public sector spent ${fmt(sc.tme_m)}, about ${gbp(sc.per_person)} for every person in the UK.</h2>
+   <p class="lede">That is the Treasury's <b>Total Managed Expenditure</b>: everything government spends, including benefits, pensions, debt interest and accounting entries. After allowing for inflation it is ${Math.abs(sc.real_change_pct).toFixed(1)}% ${sc.real_change_pct>=0?'more':'less'} than in ${sc.real_since}.</p>
+   <div class="kpi"><div><b>${fmt(sc.tme_m)}</b><span>Total Managed Expenditure, ${d.year} (${d.basis})</span></div><div><b>${gbp(sc.per_person)}</b><span>per person, using ${(sc.population/1e6).toFixed(1)}m residents (mid-2025)</span></div><div><b>${sc.real_change_pct>=0?'+':'−'}${Math.abs(sc.real_change_pct).toFixed(1)}%</b><span>in real terms since ${sc.real_since}</span></div></div>
+   ${srcBox([['pesa','Tables 1.1, 1.2 and 1.11'],['ons_population','mid-2025 population, used for the per-person figure']],['PESA-06','PESA-08','PESA-09'])}</section>
+  <section class="chapter" id="who"><div class="num">Chapter 2</div><h2>Three groups of departments control ${(100*top3).toFixed(0)}% of what departments spend.</h2>
+   <p class="lede">${g3.map(g=>g.remit_group).join(', ')} together account for ${fmt(g3.reduce((a,g)=>a+g.value,0))} of the ${fmt(sp.sum_of_departments)} that sits in department budgets. The rest of the headline total is debt interest, council spending paid for locally (council tax and similar, which is not in any department budget) and accounting entries.</p>
+   ${bars(sp.groups.map(g=>({label:g.remit_group,sub:`${(100*g.share).toFixed(0)}% of department spending`,value:g.value,href:'#remit/'+g.remit_group})),{csv:'departments-by-remit-group'})}
+   <a class="go" data-href="#remit">Explore departments, their ministers and what each pays for →</a>
+   ${srcBox([['pesa','Table 1.11'],['govuk_orgs','department names and links'] ],['PESA-05','PESA-06','PESA-13','OWN-01'])}</section>
+  <section class="chapter" id="what"><div class="num">Chapter 3</div><h2>${esc(short(f1.name))} and ${esc(short(f2.name)).toLowerCase()} are over half of the spending on services; ${fmt(sup)} of it is bought from suppliers.</h2>
+   <p class="lede">Of ${fmt(pu.services_total)} spent on public services, ${(100*sup/pu.services_total).toFixed(0)}% (${fmt(sup)}) is <b>bought from suppliers</b>, as day-to-day goods and services or capital projects. The other ${(100*de.other/pu.services_total).toFixed(0)}% (${fmt(de.other)}) is paid out another way: staff pay, benefits and pensions to people, grants to councils and others, and ${fmt(pu.debt_interest_m)} of debt interest. Read the diagram from left to right: departments, what the money is for, how it leaves government. Click a box to open it.</p>
+   ${sankey(fl)}
+   <p class="sub" style="margin-top:8px">The left column shows the eight largest spenders; "Local Government" is what councils spend, including money raised locally. Delivery splits come from the Treasury's procurement tables; "paid another way" is the remainder of each purpose.</p>
+   ${srcBox([['pesa','Tables 5.1 (department by purpose), 5.5 and 5.6 (gross procurement by purpose)']],['PESA-05','PESA-06','PESA-11','PESA-12'])}</section>
+  <section class="chapter" id="journeys"><div class="num">Chapter 4</div><h2>Each purpose reaches people differently.</h2>
+   <p class="lede">Social protection is mostly payments straight to people, so only ${(100*(de.by_function.find(x=>x.function.includes('Social protection'))||{supplier_current:0,supplier_capital:0,total:1}).supplier_current/(de.by_function.find(x=>x.function.includes('Social protection'))||{total:1}).total).toFixed(0)}% passes through suppliers. Health and defence buy far more from outside. This is why a list of supplier payments can explain defence or transport well, and explain welfare hardly at all.</p>
+   <div class="legend" style="margin-bottom:8px"><span><i class="sw2" style="background:#2a78d6"></i>Bought from suppliers: running costs</span><span><i class="sw2" style="background:#1baf7a"></i>Bought from suppliers: capital projects</span><span><i class="sw2" style="background:#8b8a84"></i>Paid another way</span></div>
+   ${delRows.map(r=>stackRow(r.f)).join('')}
+   <a class="go" data-href="#type">See spending by type: pay, procurement, grants, benefits and interest →</a>
+   ${srcBox([['pesa','Tables 5.5 and 5.6']],['PESA-06','PESA-12'])}</section>
+  <section class="chapter" id="follow"><div class="num">Chapter 5</div><h2>We can name the recipients of ${fmt(vi.paid_m)} in ${vi.departments_loaded} of ${vi.departments_total} spending groups: ${(100*vi.tme_share).toFixed(0)}% of departmental spending.</h2>
+   <p class="lede">For those departments the published payment files say who was paid, how much and (usually) for what. But a payment is only the <b>first hop</b>: the money may be passed on again by the recipient. And some of the largest budgets hardly appear: of the Department for Work and Pensions' ${fmt(vi.dwp_total)}, ${fmt(vi.dwp_people_m)} goes straight to people, so only ${fmt(vi.dwp_paid_in_files_m)} (about ${(100*vi.dwp_paid_in_files_m/vi.dwp_total).toFixed(0)}%) is paid to suppliers over £25,000.</p>
+   ${vi.grants_m?`<p class="lede">Money also leaves government as <b>grants</b>, a different kind of spending that the payment files do not show: ${fmt(vi.grants_m)} through ${vi.grants_schemes.toLocaleString('en-GB')} schemes in 2024-25, to councils, schools and colleges, charities and companies. The Cabinet Office's grants register names ${vi.grants_recipients.toLocaleString('en-GB')} recipients across ${vi.grants_awards.toLocaleString('en-GB')} awards, so for these the second step (who the council, school or charity is) is partly visible. Each department page now lists its schemes and recipients, and companies that get grants show them on their company card. Grants and payments are never added together.</p>`:''}
+   <a class="go" data-href="#suppliers">See who the biggest recipients are, linked to Companies House →</a><br><a class="go" data-href="#remit/Welfare%20%26%20work/Work%20and%20Pensions">Why the welfare budget barely shows in payment files →</a><br><a class="go" href="/coverage">See what is and is not loaded →</a>
+   ${srcBox([['spend_dwp'],['spend_dhsc'],['spend_dfe'],['spend_mod'],['spend_dft'],['spend_ho'],['companies_house']],['DWP-05','DHSC-01','DFT-04','DFT-10','HO-05','MOD-02','GRANT-01','GRANT-02'])}</section>
+  <section class="chapter" id="land"><div class="num">Chapter 6</div><h2>Per person, the Treasury allocates ${gbp(pl.highest.per_head)} to ${esc(pl.highest.region)} and ${gbp(pl.lowest.per_head)} to ${esc(pl.lowest.region)}.</h2>
+   <p class="lede">The UK average is ${gbp(pl.uk_per_head)} per person (${pl.year}). These figures cover only the three quarters of spending the Treasury can allocate to a place, and they are not adjusted for how old, sick or poor a region's people are. Open a region to see its age, disability and deprivation beside what is spent.</p>
+   <a class="go" data-href="#places">Compare regions and drill into local authorities →</a>
+   ${srcBox([['pesa','Tables 9.1a, 9.1b'],['ons_population'],['imd2025'],['census_disability'],['uc_health']],['GEO-02','GEO-03','CL-01','CL-02'])}</section>
+  <section class="chapter" id="trust"><div class="num">Chapter 7</div><h2>${re.issues_total} known problems with the data, ${re.issues_high} of them serious.</h2>
+   <p class="lede">Open government data is messy, and honest numbers need honest caveats. The Department for Work and Pensions estimates ${fmt(re.overpaid_m)} (${re.overpaid_pct}% of benefit spending, range ${fmt(re.overpaid_lower_m)} to ${fmt(re.overpaid_upper_m)}) was overpaid in the year to March 2026. That is a <b>sample-based estimate</b>, not a count of proven cases, and several benefits were last measured years ago. Each issue we have found is recorded with what it means and what we did about it.</p>
+   <div class="kpi"><div><b>${re.issues_handled}</b><span>fixed in our processing</span></div><div><b>${re.issues_flagged}</b><span>cannot be fixed, so shown to you</span></div><div><b>${re.issues_open}</b><span>unresolved</span></div></div>
+   <h3>The most serious problems still affecting what you see</h3>
+   <ul>${top.map(i=>`<li><b>${esc(i.title)}</b> <a href="#${esc(i.id)}">${esc(i.id)}</a><div class="about" style="color:var(--ink2);font-size:.88rem">${esc(i.impact)}</div></li>`).join('')}</ul>
+   <a class="go" href="/notes">Read all ${re.issues_total} data notes →</a>
+   ${srcBox([['dwp_fraud_error','Tables 1 and 2']],['DWP-07','DWP-06'])}</section>`}
+
+async function reconPanel(){
+  const r=await fetch('/api/dwp/reconciliation');if(!r.ok)return '';const d=await r.json();
+  return `<h2>Why the payment files show so little of DWP's spending</h2>
+   <p class="sub">DWP spent ${fmt(d.total)} in ${d.fy}. The spending files list payments over £25,000 <b>to suppliers</b>. Almost nothing DWP spends is paid that way.</p>
+   ${bars(d.items.map(i=>({label:i.label,sub:i.why,value:i.value,off:i.visible==='never'||i.visible==='no'})))}
+   <div class="note">Grey bars cannot be seen in the payment files. The blue bar can, and about ${fmt(d.paid_in_files_m)} of it is there. So the files are not incomplete: they show the part of the department's spending that goes to suppliers, which is about 1% of the total. To see where the benefit money goes, use the benefit tables below (by benefit, claims, and age group), and the regional view for how much social protection spending reaches each part of the country.</div>`}
+async function ucHealthPanel(){
+  const r=await fetch('/api/dwp/uc_health');if(!r.ok)return '';const d=await r.json();
+  return `<h2>Universal Credit claimants with a health condition</h2>
+   <div class="kpi"><div><b>${(d.gb_caseload/1e6).toFixed(2)}m</b><span>people on Universal Credit with a health condition, June 2026 (${(100*d.gb_share_of_uc).toFixed(0)}% of all UC claimants, Great Britain)</span></div></div>
+   ${lineChart(d.total.map(x=>({fiscal_year:x.m,basis:'outturn',value:x.value/1000})),'UC health caseload by month (thousands)',{fmtv:v=>Math.round(v).toLocaleString('en-GB')+'k',unit:'thousand people'})}
+   <div class="note">DWP's open tables, published from Stat-Xplore. "Health condition" covers people awaiting or assessed for limited capability for work, so it is a measure of entitlement and assessment, not of the number of disabled people. Area figures are on the By place tab.</div>`}
+async function budgetPanel(){
+  const r=await fetch('/api/dwp/budget');if(!r.ok)return '';const d=await r.json();
+  const nm=l=>l.replace(/^Section [A-Z]+:\s*/,'');
+  return `<h2>The department's own accounts (${d.fy})</h2>
+   <div class="kpi"><div><b>${fmt(d.total_departmental_spending)}</b><span>total departmental spending in DWP's accounts, against ${fmt(d.pesa_tme)} in the Treasury's PESA tables (agree to within 0.1%)</span></div>
+    <div><b>${fmt(d.admin_total)}</b><span>administration budget: ${fmt(d.admin_staff)} staff, ${fmt(d.admin_goods)} goods and services</span></div></div>
+   <h3>Benefits and pensions, by budget line (annually managed spending)</h3>${bars(d.ame.slice(0,8).map(x=>({label:nm(x.label),value:x.value})))}
+   <h3>Running costs, programmes and agencies (the part DWP controls directly)</h3>${bars(d.del.map(x=>({label:nm(x.label),value:x.value})))}
+   <div class="note">Both tables are published as DWP's own accounts workbook. Some lines (for example apprenticeships and adult skills) appear because of how responsibilities have moved between departments; we show them as published.</div>`}
+async function benefitsPanel(o){
+  const r=await fetch('/api/dwp/benefits?'+new URLSearchParams({year:o.year,real:o.real}));if(!r.ok)return '';const d=await r.json();
+  const fe=d.fraud_error_all,old=t=>{const m=(t||'').match(/(\d{4})\s*$/);return m&&+m[1]<=2022};
+  const sel=state.dwp.sel;let ser='';
+  if(sel){const sr=await (await fetch('/api/dwp/benefit_series?'+new URLSearchParams({benefit:sel,real:o.real}))).json();
+    ser=`<div class="crumbs"><span class="chip">${esc(sel)} <a data-clear="dwp">clear</a></span></div>`+lineChart(sr.series.map(x=>({fiscal_year:x.fiscal_year,basis:x.basis==='outturn'?'outturn':'plans',value:x.value})),`${sel}: spending per year (£ million, ${o.real?'2026/27 prices':'cash terms'})`)}
+  return `<h2>Where the benefits money goes (${d.year})</h2>
+   <div class="kpi"><div><b>${fmt(d.total)}</b><span>benefit expenditure, ${d.basis} (${o.real?'2026/27 prices':'cash terms'})</span></div>
+    ${d.underpaid_m?`<div><b>${fmt(d.underpaid_m)}</b><span>estimated <b>under</b>paid through official error (people receiving less than they were due; claimant-caused underpayments are reported separately and not shown here)</span></div>`:''}
+    ${d.net_loss_m?`<div><b>${fmt(d.net_loss_m)}</b><span>net loss after ${fmt(d.recoveries_m)} recovered (${d.net_loss_pct.toFixed(1)}% of benefit spending)</span></div>`:''}
+    ${fe.Total?`<div><b>${fmt(fe.Total)}</b><span>estimated overpaid in the year to March 2026 (${d.fraud_error_pct}% of benefit spending): ${fmt(fe.Fraud)} fraud, ${fmt(fe['Claimant Error'])} claimant error, ${fmt(fe['Official Error'])} official error</span></div>`:''}</div>
+   <div class="note">From DWP's Spring Forecast 2026 expenditure tables and its fraud and error statistics. The forecast labels ${d.year} as <b>${d.basis}</b>, while the Treasury's PESA tables above treat the same year differently, so the two will not agree exactly. Overpayment figures are <b>statistical estimates</b> from sampling (with a margin of error), not counts of proven cases. They apply to a different measurement period for each benefit, and some are many years old, flagged below. Spending per claim is simply spending divided by caseload, not what a typical claimant receives.</div>
+   ${ser}
+   ${bars(d.benefits.filter(b=>b.value>=100).map(b=>({label:b.benefit,sub:[b.caseload_thousands?(b.caseload_thousands>=1000?`${(b.caseload_thousands/1000).toLocaleString('en-GB',{maximumFractionDigits:1})}m claims`:`${Math.round(b.caseload_thousands).toLocaleString('en-GB')}k claims`):'',b.per_claimant?`about £${Math.round(b.per_claimant).toLocaleString('en-GB')} per claim per year`:'',b.take_up_pct!=null?`take-up ${b.take_up_pct}% (${b.take_up_lower}-${b.take_up_upper}%) of those entitled, about ${(b.entitled_not_claiming_k*1000).toLocaleString('en-GB')} not claiming (FYE 2024)`:'',b.overpaid_pct!=null?`estimated ${b.overpaid_pct}% overpaid (${b.overpaid_lower}-${b.overpaid_upper}%), ${(b.last_measured||'').replace(/^Last measured:\s*/,'measured ')}${old(b.last_measured)?' (OLD MEASUREMENT)':''}`:'no overpayment estimate matched'].filter(Boolean).join(' · '),value:b.value,key:'ben:'+b.benefit})))}
+   <p class="sub">${d.benefits.filter(b=>b.value<100).length} smaller schemes (each under £100m) add up to ${fmt(d.benefits.filter(b=>b.value<100).reduce((a,b)=>a+b.value,0))}.</p>`}
+async function contractsPanel(dept,fy,supplier){
+  const q={dept,fy};if(supplier)q.supplier=supplier;
+  const r=await fetch('/api/contracts?'+new URLSearchParams(q));if(!r.ok)return '';const d=await r.json();
+  if(!d.n)return supplier?'':`<h2>Contracts awarded (${fy})</h2><p class="sub">No award notices found for this department's buyers in ${fy}.</p>`;
+  return `<h2>${supplier?'Contracts awarded to this supplier':'Contracts awarded'} (${fy})</h2>
+   <div class="kpi"><div><b>${d.n.toLocaleString('en-GB')}</b><span>awards published</span></div><div><b>${fmt(d.total_gbp_m)}</b><span>total value of those contracts over their whole lifetime</span></div></div>
+   <div class="note">Contract values are the total over the life of each contract (often several years) or a framework ceiling, not what was paid in the year, and they are <b>not</b> comparable with the payments above. ${d.rows_without_value?`${d.rows_without_value} award(s) state no value. `:''}Notices from Contracts Finder and from Find a Tender (above-threshold contracts) are both included, each award counted once. An award shared by several suppliers (for example a framework) is shown at its full value, which is a ceiling that no single supplier is owed.</div>
+   ${supplier?'':`<h3>What was bought</h3>${bars(d.by_category.map(c=>({label:c.label,sub:c.n+' awards',value:c.value})))}<h3>Largest suppliers by contract value</h3>${bars(d.top_suppliers.map(c=>({label:c.label,sub:c.n+' awards · '+(c.paid_m!=null?`paid by this department in ${fy}: ${fmt(c.paid_m)}`:`no payment over £25,000 found in ${fy}`),value:c.value})))}<p class="sub">Bar = value of contracts awarded (whole life, or a shared framework ceiling that several suppliers can each show in full). The payment figure is cash actually paid in the year in payment files, so the two are not meant to match: a large contract with little paid has usually only just started, runs over many years, or is paid in amounts under £25,000.</p>`}
+   <h3>Largest awards</h3><table class="tx"><tr><th>Awarded</th><th>Contract</th><th>Supplier</th><th class="n">£ million</th></tr>${d.largest.map(t=>`<tr><td>${t.award_date||''}</td><td>${t.notice_url?`<a href="${t.notice_url}" target="_blank" rel="noopener">${esc(t.title||'(untitled)')}</a>`:esc(t.title||'(untitled)')}<div class="it">${esc(t.buyer_name)} · ${esc(t.procurement_method||'')}${t.contract_end?' · to '+t.contract_end:''}</div></td><td>${esc(t.supplier_name||'')}</td><td class="n">${t.value_gbp_m.toLocaleString('en-GB',{maximumFractionDigits:2})}</td></tr>`).join('')}</table>`}
+async function naoPanel(dept){
+  const [r,pr]=await Promise.all([fetch('/api/nao?'+new URLSearchParams({dept,limit:12})),fetch('/api/pac?'+new URLSearchParams({dept,limit:10}))]);
+  const d=r.ok?await r.json():{reports:[],by_type:[]},p=pr.ok?await pr.json():{n:0,reports:[]};
+  if(!d.reports.length&&!p.n)return '';
+  const tot=d.by_type.reduce((a,x)=>a+x.n,0);
+  return `<h2>Audit reports (National Audit Office and Parliament's Public Accounts Committee)</h2>
+   <div class="note">A listing is not a finding of waste. Many NAO reports are routine reports on the department's accounts. The sentence under each title is the NAO's own summary written for its website; the findings are in the linked report. Departments that spend more are audited more often. The Public Accounts Committee takes evidence on NAO reports and publishes its own recommendations; reports are attached to a department only where the title names it or matches an NAO report on it.</div>
+   ${d.reports.length?`<h3>National Audit Office</h3><p class="sub">${tot} NAO reports are tagged to this department: ${d.by_type.map(x=>`${x.n} ${esc(x.type.toLowerCase())}`).join(', ')}. The latest ${d.reports.length} are below.</p>
+   <table class="tx"><tr><th>Published</th><th>Report</th><th>Type</th></tr>${d.reports.map(t=>`<tr><td>${t.published}</td><td><a href="${t.url}" target="_blank" rel="noopener">${esc(t.title)}</a><div class="it">${esc(t.summary)}</div></td><td>${esc(t.type)}</td></tr>`).join('')}</table>`:''}
+   ${p.n?`<h3>Public Accounts Committee</h3><p class="sub">${p.n} committee reports are attached to this department (latest ${p.latest}). The latest ${p.reports.length} are below.</p>
+   <table class="tx"><tr><th>Published</th><th>Report</th><th>Attached because</th></tr>${p.reports.map(t=>`<tr><td>${t.published}</td><td><a href="${t.url}" target="_blank" rel="noopener">${esc(t.title)}</a><div class="it">${esc(t.report_no)} Report, ${esc(t.hc_number)}, session ${esc(t.session)}</div></td><td class="it">${esc(t.attached_by)}</td></tr>`).join('')}</table>`:''}`}
+async function errorsPanel(){
+  const ben=state.dwp.errben||'Universal Credit';
+  const r=await fetch('/api/dwp/errors?'+new URLSearchParams({benefit:ben}));if(!r.ok)return '';const d=await r.json();
+  const all=d.benefits.find(b=>b.benefit==='All Benefits');if(!all)return '';
+  const f=v=>v==null?'–':moneyM(v);
+  const t=d.totals;
+  return `<h2>Why benefit money is paid wrongly (year to March 2026)</h2>
+   <div class="kpi"><div><b>${fmt(all.overpaid_m)}</b><span>overpaid: more than people were due</span></div><div><b>${fmt(all.underpaid_m)}</b><span>underpaid through DWP's own mistakes</span></div><div><b>${fmt(all.unfulfilled_m)}</b><span>"unfulfilled eligibility": people were due more but had not told DWP the facts that would have raised their award</span></div></div>
+   <div class="note">These are three different measures from three DWP tables, estimated from samples of cases, and they are <b>not</b> netted against each other. Underpayment here is only DWP's own errors; unfulfilled eligibility is the part caused by claimants not reporting. Pick a benefit to see the reasons.</div>
+   <p><label>Benefit: <select id="errben">${d.benefits.filter(b=>b.benefit!=='All Benefits').map(b=>`<option${b.benefit===ben?' selected':''}>${esc(b.benefit)}</option>`).join('')}</select></label></p>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Reason</th><th class="n">Overpaid</th><th class="n">of which fraud</th><th class="n">claimant error</th><th class="n">official error</th><th class="n">Underpaid (official)</th><th class="n">Unfulfilled eligibility</th></tr>
+   <tr><td><b>All reasons (published total)</b></td>${['overpaid','fraud','claimant','official','underpaid','unfulfilled'].map(k=>`<td class="n"><b>${f(t[k])}</b></td>`).join('')}</tr>
+   ${d.reasons.filter(x=>(x.overpaid||x.underpaid||x.unfulfilled)).slice(0,14).map(x=>`<tr><td>${esc(x.reason)}</td>${['overpaid','fraud','claimant','official','underpaid','unfulfilled'].map(k=>`<td class="n">${x[k]!=null?f(x[k]):(x[k+'_symbol']==='w'?'<span title="DWP withholds this figure: too few cases to publish reliably">w</span>':'–')}</td>`).join('')}</tr>`).join('')}</table></div>
+   <p class="sub">A case can have more than one reason, so the reasons add up to more than the total. "w" means DWP withholds the figure because the sample is too small; "–" means nil or not published. Sorted by the largest of the three measures.</p>`}
+async function accountsNotesPanel(){
+  const r=await fetch('/api/dwp/accounts_notes');if(!r.ok)return '';const d=await r.json();
+  const au=Object.fromEntries(d.audit.map(a=>[a.item,a])),m=v=>v==null?'–':moneyM(v);
+  const lt=d.totals.find(t=>t.kind==='Loss'&&t.fiscal_year==='2025-26'),lp=d.totals.find(t=>t.kind==='Loss'&&t.fiscal_year==='2024-25'),sp=d.totals.find(t=>t.kind==='Special payment'&&t.fiscal_year==='2025-26');
+  const tbl=k=>`<table class="tx"><tr><th>Item</th><th class="n">2025-26</th><th class="n">2024-25</th></tr>${d.lines.filter(x=>x.kind===k).map(x=>`<tr><td>${esc(x.line)}<div class="it">${esc(x.what_it_is)} (p.${x.page})</div></td><td class="n">${m(x.y2025)}</td><td class="n">${m(x.y2024)}</td></tr>`).join('')}</table>`;
+  return `<h2>Losses, special payments and liabilities (accounts 2025-26)</h2>
+   <div class="kpi"><div><b>${m(lt.core_gbp_m)}</b><span>losses written off in the year (${lt.core_cases.toLocaleString('en-GB')} cases); ${m(lp.core_gbp_m)} the year before</span></div><div><b>${m(sp.core_gbp_m)}</b><span>special payments (${sp.core_cases.toLocaleString('en-GB')} cases): redress and settlements beyond legal duty</span></div></div>
+   <div class="note"><b>The auditor's opinion.</b> The Comptroller and Auditor General says the accounts give a true and fair view, but gives a <b>qualified opinion on regularity</b>: £${au['Overpayments excluding State Pension'].value}bn of overpayments and £${au['Underpayments from official error excluding State Pension'].value}bn of official-error underpayments (excluding State Pension) do not conform to the benefit rules in legislation, and are material (pp.302-303). This is about legal conformity of benefit payments. It does not mean money was lost to suppliers, and the auditor's basis differs slightly from the statistics above.</div>
+   <h3>Losses (written off)</h3>${tbl('Loss')}
+   <p class="sub">Most of the total is benefit overpayments written off after recovery fails. Overpayments are not counted as losses until recovery options are exhausted, so this is not the same as the overpayment estimate. The note lists only the larger items, so a "Not itemised" line is shown.</p>
+   <h3>Special payments</h3>${tbl('Special payment')}
+   <h3>Contingent liabilities (not on the balance sheet, possible future costs)</h3>
+   <table class="tx"><tr><th>Liability</th><th class="n">Amount</th></tr>${d.contingent.map(c=>`<tr><td>${esc(c.liability)} <span class="it">(${esc(c.kind)}, p.${c.page})</span><div class="it">${esc(c.what_it_is)}</div></td><td class="n">${c.amount_gbp_m!=null?m(c.amount_gbp_m):'not quantified'}</td></tr>`).join('')}</table>`}
+async function projectsPanel(dept){
+  const r=await fetch('/api/projects?'+new URLSearchParams({dept}));if(!r.ok)return '';const d=await r.json();if(!d.n)return '';
+  const rag=x=>x?`<span class="rag ${x.toLowerCase()}">${x}</span>`:'';
+  const cell=p=>p.dca_nista?`${rag(p.dca_nista)} <span class="it">NISTA</span>`:(p.dca_sro?`${rag(p.dca_sro)} <span class="it">department (SRO)</span>`:`<span class="it">${esc((p.dca_nista_note||p.dca_sro_note||'not rated').replace(/^Exempt under /,'Exempt: ').slice(0,60))}</span>`);
+  const n=d.nista,sr=d.sro;
+  return `<h2>Major projects (Government Major Projects Portfolio)</h2>
+   <div class="kpi"><div><b>${d.n}</b><span>projects in the portfolio at 31 March 2026</span></div><div><b>${fmt(d.wlc_m)}</b><span>combined whole-life cost of the ${d.n_with_wlc} that publish one (2024/25 prices; ${d.n_exempt_cost} withheld or too early)</span></div>
+    <div><b>${n.RED+n.AMBER+n.GREEN?`${n.RED} red · ${n.AMBER} amber · ${n.GREEN} green`:'none'}</b><span>delivery confidence, ${n.RED+n.AMBER+n.GREEN} projects assessed by NISTA${sr.RED+sr.AMBER+sr.GREEN?`. A further ${sr.RED+sr.AMBER+sr.GREEN} are rated by the department itself (${sr.RED} red, ${sr.AMBER} amber, ${sr.GREEN} green)`:''}</span></div></div>
+   <div class="note">These are judgements about whether a project can be delivered on time and to budget, not measurements of money lost. Red means delivery is in doubt. Whole-life cost covers the whole project, often a decade or more, and is <b>not</b> annual spending. "Budget variance" is only this year's forecast against this year's baseline; the file has no whole-life baseline, so a cost overrun over the project's life cannot be calculated from it. Costs withheld under Freedom of Information exemptions mean totals understate.</div>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Project</th><th>Delivery confidence</th><th class="n">Whole-life cost</th><th>Ends</th><th class="n">This year: forecast vs baseline</th></tr>
+   ${d.projects.map(p=>`<tr><td>${esc(p.project_name)}<div class="it">${esc(p.category)}</div></td><td>${cell(p)}</td><td class="n">${p.wlc_m!=null?fmt(p.wlc_m):`<span class="it">${esc((p.wlc_note||'').replace(/^Exempt under /,'Exempt: ').replace(/^The GMPP project is still at the planning stage.*$/,'Too early (planning stage)').slice(0,48))}</span>`}</td><td>${esc((p.end_date||'').replace(/^Low: (\S+), Mid: (\S+).*$/,'about $2'))}</td><td class="n">${p.fy_variance_pct!=null?`${p.fy_variance_pct>0?'+':''}${p.fy_variance_pct.toFixed(1)}%`:'–'}</td></tr>`).join('')}</table></div>
+   ${followProjects(d.projects)}
+   <p class="sub">Source reporting date 31 March 2026. Project descriptions and the department's commentary are in the published file linked below.</p>`}
+function followProjects(ps){
+  const linked=ps.filter(p=>p.named&&(p.named.contracts_n||p.named.payment_lines||p.named.grants_n||p.named.reports_n)).sort((a,b)=>(b.named.payments_gbp_m+b.named.contracts_gbp_m)-(a.named.payments_gbp_m+a.named.contracts_gbp_m));
+  if(!linked.length)return '<p class="sub">No contract, payment, grant or report was found that names any of these projects.</p>';
+  const sup=(x,label)=>x.company_no?`<a data-href="#suppliers/${esc(x.company_no)}">${esc(label)}</a>`:esc(label);
+  return `<h3>Following the money: contracts, payments, grants and reports that name each project</h3>
+   <div class="note">These links are made <b>by name only</b>: an item is listed when the project's name appears in the contract title or description, the payment description or cost centre, the grant title, or the report title, within the same department. Most spending on a project does not name it, so what follows is a floor, not the project's cost. Contract values are whole-life values or framework ceilings (not annual spending, and shared contracts show the full ceiling). Payment lines are cash paid in the files' period. Do not add the figures together.</div>
+   ${linked.map(p=>{const n=p.named;return `<div class="note" style="border-color:var(--bar)"><b>${esc(p.project_name)}</b> <span class="it">${esc(p.category)}${p.wlc_m!=null?' · whole-life cost '+fmt(p.wlc_m):''}</span>
+    <div class="meta">${n.contracts_n?`${n.contracts_n} contract award${n.contracts_n===1?'':'s'} (${fmt(n.contracts_gbp_m)} whole-life) · `:''}${n.payment_lines?`${n.payment_lines.toLocaleString('en-GB')} payment lines (${fmt(n.payments_gbp_m)}) · `:''}${n.grants_n?`${n.grants_n} grant award${n.grants_n===1?'':'s'} (${fmt(n.grants_gbp_m)}) · `:''}${n.reports_n?`${n.reports_n} audit report${n.reports_n===1?'':'s'}`:''}</div>
+    ${n.payments.length?`<div class="meta"><b>Paid to:</b> ${n.payments.map(x=>sup(x,x.supplier||'(not stated)')+' '+fmt(x.value_gbp_m)).join(' · ')}</div>`:''}
+    ${n.contracts.length?`<div class="meta"><b>Contracts:</b> ${n.contracts.map(x=>`${x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title||'(untitled)')}</a>`:esc(x.title||'')} — ${sup(x,(x.supplier||'')+(x.n_suppliers>1?' and '+(x.n_suppliers-1)+' other(s)':''))} ${fmt(x.value_gbp_m)}`).join('<br>')}</div>`:''}
+    ${n.grants.length?`<div class="meta"><b>Grants:</b> ${n.grants.map(x=>esc(x.title)+' to '+sup(x,x.recipient||'')+' '+fmt(x.value_gbp_m)).join(' · ')}</div>`:''}
+    ${n.reports.length?`<div class="meta"><b>Reports:</b> ${n.reports.map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a> (${x.kind==='nao_report'?'NAO':'Public Accounts Committee'}${x.date?', '+x.date.slice(0,4):''})`).join('; ')}</div>`:''}</div>`}).join('')}`}
+
+async function hoReconPanel(){
+  const r=await fetch('/api/ho/reconciliation');if(!r.ok)return '';const d=await r.json();
+  return `<h2>Why the payment files show only a fifth of the Home Office's spending</h2>
+   <p class="sub">The Home Office's accounts show ${fmt(d.gross_m)} of gross spending in ${d.fy}, offset by ${fmt(d.income_m)} of income (mostly visa and passport fees), so ${fmt(d.net_m)} net. The spending files list payments over £25,000 <b>to suppliers</b>.</p>
+   ${bars(d.items.map(i=>({label:i.label,sub:i.why,value:i.value,off:i.visible==='never'||i.visible==='no'})))}
+   <div class="note">Grey bars cannot appear in supplier payment files. Of the £4.4bn the department spent buying goods and services, ${fmt(d.paid_in_files_m)} (${(100*d.paid_in_files_m/d.goods_m).toFixed(0)}%) is in the files, so the files are close to complete for what they cover. The reason the coverage looks low against the Treasury's £${(d.tme_m/1000).toFixed(1)}bn is that more than half of the Home Office's spending is grants to police forces and other bodies. The accounts figure (core department and agencies) and the Treasury's total managed expenditure are on different bases and will not agree exactly. Where the police grant money goes next is not in these files.</div>`}
+const nStaff=v=>v==null?'–':Math.round(v).toLocaleString('en-GB'),gbpN=v=>v==null?'–':'£'+Math.round(v).toLocaleString('en-GB');
+async function staffPanel(dept){
+  const r=await fetch('/api/workforce?'+new URLSearchParams({dept}));if(!r.ok)return '';const d=await r.json();if(!d.n)return '';
+  if(d.n>1)return `<h2>Who works here (civil servants, March 2026)</h2><p class="sub">This group is made up of ${d.n} separate organisations. <a data-href="#people">See staff numbers for every department</a>.</p>`;
+  const rows=(items,max)=>bars(items.slice(0,max).map(x=>({label:x.label,sub:x.sub,value:x.value,text:nStaff(x.value)})));
+  const gr=d.grades.filter(g=>g.headcount).map(g=>({label:g.label,sub:g.median_salary?`median salary ${gbpN(g.median_salary)}`:'median not published (too few people)',value:g.headcount}));
+  const sexT=d.sex.Total||1;
+  return `<h2>Who works here (civil servants, ${d.as_at.slice(0,7)})</h2>
+   <div class="kpi"><div><b>${nStaff(d.headcount)}</b><span>civil servants (people)</span></div><div><b>${nStaff(d.fte)}</b><span>full-time equivalent (part-timers counted as fractions)</span></div><div><b>${gbpN(d.median_salary)}</b><span>median full-time-equivalent salary</span></div><div><b>${d.ratio?d.ratio.toFixed(1)+' : 1':'–'}</b><span>highest earner (${gbpN(d.highest_earner_band_midpoint)} pay-band mid-point) to median</span></div></div>
+   <div class="note">Civil servants only: this does not include armed forces, police officers, NHS staff or teachers, who are not civil servants. Numbers are rounded to the nearest five. Salaries are gross annual pay for a full-time equivalent, before pension and employer costs, so they are not what staff cost the department. Departments set their own grades; the Cabinet Office maps them to five common levels, so grades are comparable only roughly.</div>
+   <h3>By grade (headcount, with median pay)</h3>${rows(gr,6)}
+   ${d.organisations.length>1?`<h3>By organisation within the department</h3>${rows(d.organisations.map(o=>({label:o.organisation.replace(/\s*\(excl\. agencies\)/,' (core department)'),sub:o.median_salary?`median salary ${gbpN(o.median_salary)}`:'',value:o.headcount})),12)}`:''}
+   <h3>Where they are based</h3>${rows(d.regions,13)}
+   <h3>What they do (professions; one profession per person)</h3>${rows(d.professions,9)}
+   <p class="sub">${nStaff(d.profession_unreported)} people have no profession recorded or work outside the core professions. The ${d.professions.length} listed are the largest.</p>
+   <div class="kpi"><div><b>${(100*(d.sex.female||0)/sexT).toFixed(0)}%</b><span>women (${nStaff(d.sex.female)} women, ${nStaff(d.sex.male)} men)</span></div><div><b>${nStaff(d.entrants_total)}</b><span>joined in the year to March 2026</span></div><div><b>${nStaff(d.leavers_total_t30)}</b><span>left in the year</span></div></div>
+   ${d.leavers.length?`<h3>Why people left</h3>${rows(d.leavers.map(l=>({label:l.cause,value:l.value})),8)}`:''}
+   ${d.monthly?monthlyBlock(d.monthly):''}
+   <p class="sub"><a data-href="#people">Compare staff numbers and pay across every department</a></p>`}
+function monthlyBlock(m){
+  const gb=v=>v==null?'–':money(v);
+  return `<h3>Latest monthly workforce return (${m.month}): includes arm's-length bodies, staff on payroll and contractors</h3>
+   <div class="kpi"><div><b>${nStaff(m.payroll_headcount)}</b><span>on the payroll (${nStaff(m.payroll_fte)} full-time equivalent)</span></div><div><b>${nStaff(m.non_payroll_headcount)}</b><span>contractors, agency and interim staff (not on payroll)</span></div>${m.consultancy_contracts!=null?`<div><b>${nStaff(m.consultancy_contracts)}</b><span>consultancy contracts running</span></div>`:''}${m.paybill_total!=null?`<div><b>${gb(m.paybill_total)}</b><span>payroll cost <b>for the month</b> (salary, pension, National Insurance and more)</span></div>`:''}</div>
+   <div class="note">This is the department's own monthly management return, published in the interests of transparency. It is <b>not an official statistic</b>, it is not reconciled with the Cabinet Office figures above, and it covers the department's arm's-length bodies and some staff who are not civil servants, so its totals differ from the civil service count. Months differ between departments. A year's payroll cost is roughly twelve months, but months vary.${m.grade_gap>0?` Staff by grade add up to ${nStaff(m.payroll_headcount-m.grade_gap)} of ${nStaff(m.payroll_headcount)}: the rest are not split by grade in the return.`:''}${m.paybill_total==null?' This department leaves the cost columns blank.':''}</div>
+   <h3>Payroll staff by grade (people; full-time equivalent shown beside)</h3>${bars(m.grades.filter(g=>g.headcount).map(g=>({label:g.label,sub:`${nStaff(g.fte)} full-time equivalent`,value:g.headcount,text:nStaff(g.headcount)})))}
+   ${m.paybill_components.length?`<h3>What the payroll cost for the month is made of</h3>${bars(m.paybill_components.map(c=>({label:c.label,value:c.value,text:gb(c.value)})))}`:''}
+   ${m.organisations.length>1?`<h3>By organisation (month: ${m.month})</h3><div style="overflow-x:auto"><table class="tx"><tr><th>Organisation</th><th class="n">On payroll</th><th class="n">Full-time equivalent</th><th class="n">Payroll cost for the month</th></tr>${m.organisations.map(o=>`<tr><td>${esc(o.organisation)}<div class="it">${esc(o.org_type)}</div></td><td class="n">${nStaff(o.headcount)}</td><td class="n">${nStaff(o.fte)}</td><td class="n">${gb(o.paybill)}</td></tr>`).join('')}</table></div>`:''}`}
+const VERDICT={supported:['Supported','The numbers back the claim'],partly:['Partly supported','Some of it holds'],not_supported:['Not supported','The numbers do not back the claim'],answered:['Answered','A factual question: the numbers are the answer'],cannot_test:["Can't be tested",'Open data cannot answer this yet']};
+function claimCard(c){
+  const v=VERDICT[c.verdict],r=c.result||{},ser=(r.series||[])[0];
+  let chart='';
+  if(ser){const ff=ser.forecast_from;const U=ser.unit||'%',F=U==='%'?(x=>x.toFixed(1)+'%'):(x=>Math.round(x).toLocaleString('en-GB'));chart=lineChart(ser.points.map(p=>({fiscal_year:p[0],basis:ff&&p[0]>=ff?'plans':'outturn',value:p[1]})),ser.name,{fmtv:F,unit:U==='%'?'per cent':U})}
+  if(r.bars&&r.bars.length)chart+=bars(r.bars.map(b=>({...b,text:b.text||String(b.value)})),{unit:c.unit||''});
+  const tbl=r.table?`<div style="overflow-x:auto"><table class="tx"><tr>${r.table.columns.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${r.table.rows.map(x=>`<tr>${x.map(y=>`<td>${esc(y)}</td>`).join('')}</tr>`).join('')}</table></div>`:'';
+  return `<div class="panel claimcard" id="${c.claim_id}">
+   <h3>&ldquo;${esc(c.claim)}&rdquo;</h3><div class="verdict-row"><span class="chip v-${c.verdict}" title="${esc(v[1])}">${v[0]}</span><b class="it">${esc(c.claim_id)}</b></div><p>${esc(c.headline)}</p><div class="it">Data from: ${esc(c.as_at||'see the Data years page')}</div>${chart}${tbl}${(r.notes||[]).map(n=>`<div class="note">${esc(n)}</div>`).join('')}${dataLinks(c.tables)}${termChips(c.terms)}
+   <details><summary>How we tested it</summary><p>${esc(c.test)}</p></details>
+   <button class="dl" data-cite="${esc(c.claim_id)}" title="Copy a citation for this result">Copy citation</button>
+   ${srcBox(c.sources.map(s=>[s,'']),c.issues)}</div>`}
+const tallyChips=cs=>['supported','partly','not_supported','answered','cannot_test'].map(k=>[k,cs.filter(c=>c.verdict===k).length]).filter(x=>x[1]).map(x=>`<span class="chip v-${x[0]}">${x[1]} ${VERDICT[x[0]][0].toLowerCase()}</span>`).join(' ');
+let TERMS={};const termChips=ts=>ts&&ts.length?`<div class="note">Terms used: ${ts.map(t=>`<a href="#glossary/${esc(t)}" title="${esc((TERMS[t]||{}).short||'')}">${esc((TERMS[t]||{}).term||t)}</a>`).join(' · ')}.</div>`:'';
+const dataLinks=ts=>'';const _unusedDataLinks=ts=>ts&&ts.length?`<div class="note">Data behind this (query it yourself): ${ts.map(t=>`<a href="#data/${esc(t)}">${esc(t)}</a>`).join(', ')}. <a href="#data/sql">Open the SQL console</a>.</div>`:'';
+async function questionsView(){
+  const d=await api('claims'),topic=state.path[0];try{TERMS=Object.fromEntries((await glossary()).terms.map(t=>[t.id,t]))}catch(e){if(e instanceof Stale)throw e}
+  $('#hero').innerHTML=`Questions<small>Claims from the news, tested against the official numbers. Each verdict is computed from the data, the rule for it is shown, and the tables behind it can be queried on the Data tab.</small>`;
+  const topics=d.topics.filter(t=>d.claims.some(c=>c.topic===t.id));
+  if(!topic||!topics.some(t=>t.id===topic)){
+    $('#view').innerHTML=`<div class="note">Pick a topic. Every claim is stated the way it is commonly put, tested with a rule printed beside it, and answered "supported", "partly supported", "not supported", or "can't be tested with open data" (with the reason and what would be needed).</div>`+
+      topics.map(t=>{const cs=d.claims.filter(c=>c.topic===t.id);return `<div class="panel" data-href="#questions/${t.id}" style="cursor:pointer" tabindex="0"><h2 style="margin:0 0 6px">${esc(t.title)}</h2><p class="qline">${esc(t.question)}</p><div class="verdict-row"><span class="it">${cs.length} claims:</span> ${tallyChips(cs)}</div><div class="it" style="margin-top:6px">Open this topic →</div></div>`}).join('')+
+      `<div class="note">All the tables behind these answers: <a href="#data">Data</a>. <a href="/notes">Data notes and caveats</a>.</div>`;
+    return}
+  const t=topics.find(x=>x.id===topic),cs=d.claims.filter(c=>c.topic===topic),secs=[...new Set(cs.map(c=>c.section||''))];
+  $('#view').innerHTML=`<div class="related"><span>Topics:</span>${topics.map(x=>`<a ${x.id===topic?'style="font-weight:700"':''} href="#questions/${x.id}">${esc(x.title)}</a>`).join('')}<a href="#data/topic/${topic}">Tables for this topic</a></div>
+    <h2>${esc(t.title)}</h2><p class="qline">${esc(t.question)}</p><div class="verdict-row"><span class="it">${cs.length} claims tested:</span> ${tallyChips(cs)}</div>`+
+    `<div class="related"><span>Jump to:</span>${secs.filter(Boolean).map((sn,i)=>`<a href="#questions/${topic}" data-jump="sec-${i}">${esc(sn)}</a>`).join('')}</div>`+
+    secs.map((sn,i)=>`${sn?`<h3 class="sec" id="sec-${i}">${esc(sn)}</h3>`:''}${cs.filter(c=>(c.section||'')===sn).map(claimCard).join('')}`).join('');
+  $('#view').querySelectorAll('[data-jump]').forEach(a=>a.onclick=e=>{e.preventDefault();document.getElementById(a.dataset.jump).scrollIntoView()});
+  $('#view').querySelectorAll('[data-cite]').forEach(b=>b.onclick=()=>{const c=d.claims.find(x=>x.claim_id===b.dataset.cite);const t=`${c.claim_id}: ${c.headline} (NewGov, ${location.origin}/#questions/${c.topic}, accessed ${new Date().toISOString().slice(0,10)})`;navigator.clipboard&&navigator.clipboard.writeText(t);b.textContent='Copied'})}
+const gridTable=(cols,rows)=>`<div style="overflow-x:auto;max-height:70vh"><table class="tx"><tr>${cols.map(h=>`<th>${esc(h)}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(v=>`<td${typeof v==='number'?' class="n"':''}>${v==null?'<span class="it">null</span>':esc(typeof v==='number'?(Number.isInteger(v)?v.toLocaleString('en-GB'):String(Math.round(v*1e4)/1e4)):v)}</td>`).join('')}</tr>`).join('')}</table></div>`;
+async function dataView(){
+  if(state.path[0]==='years'){await yearsView();return}
+  $('#hero').innerHTML='Data';$('#view').innerHTML='<div class="note">The data browser and SQL console are not part of the static edition. The tables behind this snapshot are described on the <a href="#data/years">Data years</a> page.</div>';return
+  const d=await api('datasets'),[a,b]=state.path;
+  $('#hero').innerHTML=`Data<small>Every table behind the answers. Browse, preview, download as CSV or query with SQL.</small>`;
+  const nav=`<div class="related"><span>Data:</span><a href="#data">All tables</a><a href="#data/sql">SQL console</a><a href="#data/years">Data years</a><a href="#glossary">Glossary</a></div>`;
+  if(a==='sql'){
+    const ex=d.tables.filter(t=>t.example).slice(0,12);
+    $('#view').innerHTML=nav+`<h2>SQL console</h2><div class="note">Read-only DuckDB SQL over the tables in the catalogue: SELECT, WITH, DESCRIBE, SUMMARIZE. No files or network, 20 second limit, up to 10,000 rows. Table and column names are listed in the <a href="#data">catalogue</a>.</div>
+     <textarea id="sqlq" rows="7" style="width:100%;font-family:monospace;font-size:13px" spellcheck="false">${esc(sessionStorage.getItem('sql')||"select tax_year, grp, value from tax_percentile where measure='share_income_tax_pct' and grp in ('Top 1%','Top 10%','Bottom 50%') order by tax_year desc, grp limit 30")}</textarea>
+     <div class="tools"><button class="dl" id="sqlrun">Run</button> <button class="dl" id="sqlcsv">Download CSV</button> <span id="sqlmsg" class="it"></span></div><div id="sqlout"></div>
+     <h3 class="sec">Examples</h3>${ex.map(t=>`<div><a href="#data/sql" data-ex="${esc(t.example)}">${esc(t.title)}</a> <span class="it">(${esc(t.name)})</span></div>`).join('')}`;
+    const run=async()=>{const q=$('#sqlq').value;try{sessionStorage.setItem('sql',q)}catch(e){}$('#sqlmsg').textContent='Running…';
+      const r=await fetch('/api/sql?'+new URLSearchParams({q}));const j=await r.json();
+      if(!r.ok){$('#sqlmsg').textContent='';$('#sqlout').innerHTML=`<div class="note" style="border-color:#c33">${esc(j.detail||'Error')}</div>`;return}
+      $('#sqlmsg').textContent=`${j.rows.length.toLocaleString('en-GB')} row${j.rows.length===1?'':'s'}${j.truncated?' (truncated)':''}`;$('#sqlout').innerHTML=gridTable(j.columns,j.rows)};
+    $('#sqlrun').onclick=run;$('#sqlq').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')run()});
+    $('#sqlcsv').onclick=()=>{location.href='/api/sql/csv?'+new URLSearchParams({q:$('#sqlq').value})};
+    $('#view').querySelectorAll('[data-ex]').forEach(x=>x.onclick=e=>{e.preventDefault();$('#sqlq').value=x.dataset.ex;run()});
+    return}
+  if(a&&a!=='topic'){
+    const t=d.tables.find(x=>x.name===a);if(!t){$('#view').innerHTML=nav+`<div class="note">No table called ${esc(a)}.</div>`;return}
+    const pv=await api('table/'+encodeURIComponent(a),{limit:25});
+    $('#view').innerHTML=nav+`<h2>${esc(t.name)}</h2><div class="note"><b>${esc(t.title)}</b><br>${t.grain?`One row is: ${esc(t.grain)}.<br>`:''}${t.notes?esc(t.notes)+'<br>':''}${t.rows.toLocaleString('en-GB')} rows, ${t.columns.length} columns. Topic: ${esc((d.topics.find(x=>x.id===t.topic)||{}).title||t.topic)}.</div>
+      <div class="tools"><a class="dl" href="/api/table/${encodeURIComponent(a)}/csv">Download CSV</a> <a class="dl" href="#data/sql" data-ex="${esc(t.example||`select * from ${t.name} limit 100`)}">Query it</a></div>
+      ${t.claims.length?`<div class="note">Used by claims: ${t.claims.map(c=>`<a href="#questions/${c.startsWith('IMM')?'immigration':c.startsWith('TAX')?'tax':'debt'}">${esc(c)}</a>`).join(', ')}</div>`:''}
+      <h3 class="sec">Columns</h3><div style="overflow-x:auto"><table class="tx"><tr><th>Column</th><th>Type</th></tr>${t.columns.map(c=>`<tr><td>${esc(c.name)}</td><td>${esc(c.type)}</td></tr>`).join('')}</table></div>
+      <h3 class="sec">First 25 rows</h3>${gridTable(pv.rows.length?Object.keys(pv.rows[0]):t.columns.map(c=>c.name),pv.rows.map(r=>Object.values(r)))}
+      ${t.example?`<h3 class="sec">Example query</h3><pre style="white-space:pre-wrap">${esc(t.example)}</pre>`:''}${t.source?srcBox([[t.source,'']],[]):''}`;
+    $('#view').querySelectorAll('[data-ex]').forEach(x=>x.onclick=e=>{try{sessionStorage.setItem('sql',x.dataset.ex)}catch(_){}});
+    return}
+  const topicF=a==='topic'?b:null,q=(sessionStorage.getItem('dq')||'').toLowerCase();
+  const show=d.topics.filter(t=>!topicF||t.id===topicF);
+  $('#view').innerHTML=nav+`<div class="note">${d.tables.length} tables. Every claim on the <a href="#questions">Questions</a> tab is computed from these; ${topicF?`showing one topic, <a href="#data">show all</a>`:'filter by topic below'}.</div>
+   <div class="related"><span>Topic:</span>${d.topics.map(t=>`<a ${t.id===topicF?'style="font-weight:700"':''} href="#data/topic/${t.id}">${esc(t.title)}</a>`).join('')}</div>
+   <input id="dq" type="search" placeholder="Filter tables by name or title" value="${esc(q)}" style="width:100%;padding:8px;margin:8px 0">`+
+   `<div id="dlist">${show.map(t=>{const ts=d.tables.filter(x=>x.topic===t.id);return ts.length?`<h3 class="sec">${esc(t.title)} <span class="it">(${ts.length})</span></h3>`+ts.map(x=>`<div class="bar-row" data-href="#data/${esc(x.name)}" data-q="${esc((x.name+' '+x.title).toLowerCase())}" tabindex="0"><div class="lab">${esc(x.name)}<em>${esc(x.title)}</em></div><div class="val" style="min-width:140px">${x.rows.toLocaleString('en-GB')} rows${x.claims.length?` · ${x.claims.length} claims`:''}</div></div>`).join(''):''}).join('')}</div>`;
+  const f=()=>{const v=$('#dq').value.toLowerCase();try{sessionStorage.setItem('dq',v)}catch(e){}document.querySelectorAll('#dlist .bar-row').forEach(r=>r.style.display=r.dataset.q.includes(v)?'':'none')};
+  $('#dq').addEventListener('input',f);f()}
+const fmtN=v=>v==null?'':Math.round(v).toLocaleString('en-GB'), fmtP=v=>v==null?'':v.toFixed(1)+'%', fmtGBPm=v=>v==null?'':money(v*1000);
+const fmtGBP=v=>v==null?'':'£'+Math.round(v).toLocaleString('en-GB'), fmtBn=v=>v==null?'':money(v), fmtM=v=>v==null?'':money(v);
+const hq=t=>t?`<a class="hq" href="#glossary/${esc(t)}" title="What does this mean? Open the glossary">?</a>`:'';
+const LEVELNAME={constituency:'Westminster constituency (July 2024 boundaries)',local_authority:'Local authority',region:'Region',country:'Nation or national total'};
+const BEN_TERM={UC:'uc',UCH:'uc',PIP:'pip',DLA:'dla',AA:'attendance_allowance',CA:'carers_allowance',ESA:'esa',SP:'state_pension',PC:'pension_credit',HB:'housing_benefit',CILIF:'cilif',NINO:'nino_registration'};
+const mfmt=(m,v)=>v==null?'':m.unit==='percent'?fmtP(v):m.unit==='score'?v.toFixed(1):m.unit==='GBP'?(Math.abs(v)>=1e6?fmtBn(v):fmtGBP(v)):m.unit==='per 1,000'?v.toFixed(1):fmtN(v);
+const KIND={constituency:'Constituency',local_authority:'Local authority',region:'Region',country:'Nation'};
+const searchBox=()=>`<div class="lg-search"><label for="aq">Find any place</label><div class="wrap" id="swrap"><div class="box"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21" stroke-linecap="round"/></svg><input id="aq" type="search" placeholder="Search a constituency, council or region by name" autocomplete="off" aria-label="Search for a constituency, local authority or region by name"></div><div class="res" id="ares" role="listbox"></div></div><div class="hint">Try "Poplar", "Gateshead" or "North East". This static edition searches place names only; there is no postcode lookup.</div></div>`;
+function bindSearch(){const q=$('#aq');if(!q)return;const box=$('#ares'),wrap=$('#swrap');let tmr;const sync=()=>wrap.classList.toggle('open',box.innerHTML.trim()!=='');new MutationObserver(sync).observe(box,{childList:true});
+  const find=async()=>{const v=q.value.trim();if(v.length<2){box.innerHTML='';return}
+    const r=await api('areas/search',{q:v});box.innerHTML=r.results.length?r.results.map(x=>`<a href="#areas/${x.geo_level}/${encodeURIComponent(x.geo_code)}" role="option"><span>${esc(x.name)}<small> ${esc(x.detail||'')}</small></span><span class="kind">${esc(KIND[x.geo_level]||x.geo_level)}</span></a>`).join(''):`<a role="option"><span>No match for "${esc(v)}". Try a council or constituency name, a region, or a full postcode.</span></a>`};
+  q.addEventListener('input',()=>{clearTimeout(tmr);tmr=setTimeout(()=>find().catch(()=>{}),180)});
+  q.addEventListener('keydown',e=>{if(e.key==='Enter'){const a=box.querySelector('a[href]');if(a){location.hash=a.getAttribute('href');box.innerHTML=''}}else if(e.key==='Escape'){box.innerHTML=''}});
+  box.addEventListener('click',e=>{if(e.target.closest('a[href]'))box.innerHTML=''});
+  document.addEventListener('click',e=>{if(box.isConnected&&!e.target.closest('.lg-search'))box.innerHTML=''})}
+let GLOSS=null;const glossary=async()=>GLOSS||(GLOSS=await api('glossary'));
+async function areasView(){
+  const [lv,code]=state.path;
+  $('#hero').innerHTML=`Local Gov<small>The nation, every region, local authority and parliamentary constituency: who lives there, what the state pays out in benefits, what councils spend and where government money lands. Every figure names the year it describes.</small>`;
+  const nav=searchBox()+`<div class="related"><span>Local Gov:</span><a href="#areas">Rankings</a><a href="#areas/country/Great%20Britain">National view (Great Britain)</a><a href="#glossary">Glossary</a><a href="#data/years">Data years</a><a href="#questions/places">Questions about places</a></div>`;
+  if(!lv||!code){
+    const md=await api('areas/metrics');
+    const opts=md.groups.map(g=>`<optgroup label="${esc(g)}">${md.metrics.filter(m=>m.group===g).map(m=>`<option value="${esc(m.id)}">${esc(m.title)}</option>`).join('')}</optgroup>`).join('');
+    $('#view').innerHTML=nav+`<h2>Where would you like to start?</h2>
+     <div class="start-grid"><a class="start-card big" href="#areas/country/Great%20Britain"><i>1</i><b>Great Britain</b><span>The whole picture: money, people and the map</span></a>
+      <a class="start-card" href="#areas/country/England"><i>2</i><b>England</b><span>Its regions, councils and constituencies</span></a>
+      <a class="start-card" href="#areas/country/Wales"><i>3</i><b>Wales</b><span>Its councils and constituencies</span></a>
+      <a class="start-card" href="#areas/country/Scotland"><i>4</i><b>Scotland</b><span>Benefits and payments by constituency</span></a></div>
+     <div class="start-regions"><span class="d-lab">Or pick an English region</span>${['North East','North West','Yorkshire and The Humber','East Midlands','West Midlands','East of England','London','South East','South West'].map(r=>`<a href="#areas/region/${encodeURIComponent(r)}">${esc(r)}</a>`).join('')}</div>
+     <h2>Rank areas</h2><div class="tools"><select id="am">${opts}</select> <select id="al"><option value="constituency">Constituencies</option><option value="local_authority">Local authorities</option><option value="region">Regions and nations</option></select></div><div id="arank"></div>`;
+    bindSearch();
+    const rank=async()=>{const m=$('#am').value,l=$('#al').value;const r=await api('areas/rank',{metric:m,level:l,limit:12});
+      const row=(x,i)=>`<tr><td>${i+1}</td><td><a href="#areas/${l}/${encodeURIComponent(x.code)}">${esc(x.name)}</a></td><td>${esc(x.region||'')}</td><td class="n">${mfmt(r.metric,x.value)}</td></tr>`;
+      $('#arank').innerHTML=`<div class="note"><b>${esc(r.metric.title)}</b> ${hq(r.metric.term)} across ${r.n} areas. <b>Data from:</b> ${esc(r.as_at||'')}. Basis: ${esc(r.basis||'')}.${r.metric.note?' '+esc(r.metric.note):''}</div>
+       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px"><div><h3 class="sec">Highest</h3><table class="tx"><tr><th></th><th>Area</th><th>Region</th><th class="n">Value</th></tr>${r.highest.map(row).join('')}</table></div>
+       <div><h3 class="sec">Lowest</h3><table class="tx"><tr><th></th><th>Area</th><th>Region</th><th class="n">Value</th></tr>${r.lowest.map(row).join('')}</table></div></div>`};
+    $('#am').value='dwp_spend_per_head';$('#am').onchange=rank;$('#al').onchange=rank;rank();return}
+  const [d,G]=await Promise.all([api(`areas/${lv}/${encodeURIComponent(code)}`),glossary()]);const a=d.area;
+  let M=null;if(['constituency','local_authority','region','country'].includes(lv)){try{M=await api('areas/matrix',{level:lv==='local_authority'?'local_authority':'constituency'})}catch(e){if(e instanceof Stale)throw e}}
+  let ewc=null;if(lv==='country'&&a.code==='Great Britain'){try{ewc=(await api('areas/country/England')).census}catch(e){if(e instanceof Stale)throw e}}
+  const gl=Object.fromEntries(G.terms.map(t=>[t.id,t]));
+  const up=lv==='constituency'?`Region: ${a.region?`<a href="#areas/region/${encodeURIComponent(a.region)}">${esc(a.region)}</a>`:'n/a'} · Nation: <a href="#areas/country/${encodeURIComponent(a.country)}">${esc(a.country)}</a> · <a href="#areas/country/Great%20Britain">Great Britain</a>`:lv==='local_authority'?`Region: ${a.region?`<a href="#areas/region/${encodeURIComponent(a.region)}">${esc(a.region)}</a>`:'n/a'} · Nation: <a href="#areas/country/${encodeURIComponent(a.country)}">${esc(a.country)}</a> · <a href="#areas/country/Great%20Britain">Great Britain</a>`:lv==='region'?`Nation: <a href="#areas/country/${encodeURIComponent(a.country||'England')}">${esc(a.country||'England')}</a> · <a href="#areas/country/Great%20Britain">Great Britain</a>`:(a.code!=='Great Britain'?`<a href="#areas/country/Great%20Britain">Great Britain</a>`:'The whole of Great Britain (benefit figures) and England and Wales (census figures)');
+  const olink=x=>lv==='constituency'?(x.tier==='district or unitary'?`<a href="#areas/local_authority/${encodeURIComponent(x.code)}">${esc(x.name)}</a>`:esc(x.name)+' (county council)'):`<a href="#areas/constituency/${encodeURIComponent(x.code)}">${esc(x.name)}</a>`;
+  const groups=[...new Set(d.metrics.map(m=>m.group))];
+  const mrow=m=>`<tr><td>${esc(m.title)} ${hq(m.term)}${m.basis&&!/^Census/.test(m.basis)?`<div class="it">${esc(m.basis)}</div>`:''}</td><td class="n"><b>${mfmt(m,m.value)}</b></td><td class="n">${m.england_wales==null?'':mfmt(m,m.england_wales)}</td><td class="n" style="white-space:nowrap">${m.rank&&m.of?m.rank+' of '+m.of:''}</td><td class="it">${esc(m.as_at||'')}</td></tr>`;
+  const kinds={};d.payments.forEach(p=>{if(p.fiscal_year==='2025-26'||p.source==='grants'||p.fiscal_year==='2025')(kinds[p.kind]=kinds[p.kind]||{a:0}).a+=p.amount_gbp});
+  const f2=d.finance||[];
+  const bens=(d.benefits||[]).filter(b=>b.annual_spend_gbp!=null).sort((x,y)=>y.annual_spend_gbp-x.annual_spend_gbp),totSpend=bens.reduce((s,b)=>s+b.annual_spend_gbp,0);
+  const spendPH=(d.metrics.find(m=>m.id==='dwp_spend_per_head')||{}).value,ewPH=(d.metrics.find(m=>m.id==='dwp_spend_per_head')||{}).england_wales;
+  const explain=b=>{const g=gl[BEN_TERM[b.source]];return g&&g.why_paid?`<div class="note" style="border-color:#2a7"><b>Why people are paid ${esc(g.term)}</b> <a href="#glossary/${esc(g.id)}">full definition</a><br>${esc(g.short)}<br><b>Why this amount:</b> ${esc(g.why_paid)}<br><b>Who receives it:</b> ${esc(g.who||'')}<br><b>Reading it fairly:</b> ${esc(g.avoid_blame||'')}${g.source?`<br><span class="it">Rules and current rates: <a href="${esc(g.source)}" target="_blank" rel="noopener">GOV.UK</a>. Nothing here is advice about anyone's entitlement.</span>`:''}</div>`:''};
+  const bdTable=(bd,rs,per)=>`<div style="overflow-x:auto"><table class="tx"><tr><th>${esc(bd.replace(/_/g,' '))}</th><th class="n">Count</th><th class="n">% here</th><th class="n">% Great Britain</th>${rs.some(r=>r.mean_amount!=null)?`<th class="n">Average award per ${per||'week'}</th><th class="n">Annualised spend</th>`:''}</tr>${rs.map(r=>`<tr><td>${esc(r.category)}</td><td class="n">${fmtN(r.value)}</td><td class="n">${r.pct==null?'':fmtP(r.pct)}</td><td class="n">${r.gb_pct==null?'':fmtP(r.gb_pct)}</td>${rs.some(x=>x.mean_amount!=null)?`<td class="n">${r.mean_amount==null?'':fmtGBP(r.mean_amount)}</td><td class="n">${r.spend_gbp==null?'':fmtM(r.spend_gbp)}</td>`:''}</tr>`).join('')}</table></div>`;
+  const periods=[...new Set(d.metrics.map(m=>m.as_at).filter(Boolean))];
+  let recon='';if(lv==='country'&&a.code==='Great Britain'){try{const rc=await api('benefit-spend/reconciliation');const nm={SP:'State Pension',UCH:'Universal Credit',PIP:'Personal Independence Payment',HB:'Housing Benefit',AA:'Attendance Allowance',DLA:'Disability Living Allowance',PC:'Pension Credit',ESA:'Employment and Support Allowance',CA:"Carer's Allowance"};
+    recon=`<h3 class="sec">Does our estimate match DWP's own totals?</h3><div class="note">Our figure is the yearly rate at the latest date; DWP's expenditure tables are cash for a financial year, so they differ with caseload growth, April uprating and how each is counted. Large gaps are explained in the glossary entry "Benefit spend by area" ${hq('annualised_benefit_spend')}.</div><div style="overflow-x:auto"><table class="tx"><tr><th>Benefit</th><th>Our period</th><th class="n">Our annualised estimate</th><th class="n">DWP 2024-25 (outturn)</th><th class="n">DWP 2025-26 (forecast)</th><th class="n">Ours vs 2025-26</th></tr>${rc.rows.sort((x,y)=>y.spend-x.spend).map(r=>{const o25=r.official.find(o=>o.fiscal_year==='2025-26'),o24=r.official.find(o=>o.fiscal_year==='2024-25');return `<tr><td>${esc(nm[r.source]||r.source)}</td><td class="it">${esc(r.period)}</td><td class="n">${fmtBn(r.spend)}</td><td class="n">${o24?fmtBn(o24.gbp_m*1e6):''}</td><td class="n">${o25?fmtBn(o25.gbp_m*1e6):''}</td><td class="n">${o25?((r.spend/(o25.gbp_m*1e6)-1)*100).toFixed(0)+'%':''}</td></tr>`}).join('')}</table></div>`}catch(e){if(e instanceof Stale)throw e}}
+  $('#view').innerHTML=nav+(M?`<div id="dash"></div><h2 class="sec" style="margin-top:44px">Detailed tables and breakdowns</h2>`:'')+`<h2>${esc(a.name)}</h2><div class="note"><b>${esc(LEVELNAME[lv]||lv)}</b>${lv==='constituency'||lv==='local_authority'?' · '+esc([a.region,a.country].filter(Boolean).join(', ')):''}. ${up}${d.overlap.length?`<br>${esc(d.overlap_kind.charAt(0).toUpperCase()+d.overlap_kind.slice(1))}: ${d.overlap.map(x=>`${olink(x)} (${(100*x.share_of_this).toFixed(0)}% of this ${lv==='constituency'?'constituency':'authority'}'s residents${x.tier==='county'?', county council':''})`).join('; ')}.`:''}
+    ${!d.metrics.some(m=>m.basis&&/^Census/.test(m.basis))?'<br>No Census 2021 figures for this area (Scotland and Northern Ireland have separate censuses, not loaded yet: backlog B-58).':''}${periods.length?`<br><b>Years on this page:</b> ${periods.map(esc).join('; ')}. Each row says which. <a href="#data/years">All data years</a>.`:''}</div>
+   ${d.children.length?`<h3 class="sec">Drill down: ${lv==='country'&&a.code==='Great Britain'?'regions and nations':lv==='region'||a.code==='Wales'||a.code==='Scotland'?'local authorities':'regions'} in ${esc(a.name)}</h3><div style="overflow-x:auto"><table class="tx"><tr><th>Area</th><th class="n">Residents (Census 2021)</th><th class="n">Benefits, annualised</th><th class="n">Per resident</th><th class="n">On UC per 100 aged 15-64</th><th class="n">PIP per 100 aged 15-64</th></tr>${d.children.sort((x,y)=>(y.dwp_spend_total||0)-(x.dwp_spend_total||0)).map(c=>`<tr><td><a href="#areas/${c.level}/${encodeURIComponent(c.code)}">${esc(c.name)}</a></td><td class="n">${fmtN(c.population)}</td><td class="n">${fmtBn(c.dwp_spend_total)}</td><td class="n">${fmtGBP(c.dwp_spend_per_head)}</td><td class="n">${c.dwp_uc_rate==null?'':c.dwp_uc_rate.toFixed(1)}</td><td class="n">${c.dwp_pip_rate==null?'':c.dwp_pip_rate.toFixed(1)}</td></tr>`).join('')}</table></div>`:''}
+   ${bens.length?`<h3 class="sec">What the state pays here in benefits (our annualised estimate) ${hq('annualised_benefit_spend')}</h3><div class="note"><b>${fmtBn(totSpend)}</b> a year across nine benefits${spendPH!=null?`, <b>${fmtGBP(spendPH)}</b> per resident${ewPH!=null?` (England and Wales: ${fmtGBP(ewPH)})`:''}`:''}. Cases at each benefit's latest date × DWP's average award × 52 weeks (Universal Credit: households × monthly payment × 12): the yearly rate then, not cash paid in a financial year. A person can receive several. Excludes Child Benefit, tax credits, Winter Fuel Payment and others not loaded. ${lv==='country'&&a.code==='Great Britain'?'This is people living in Great Britain: State Pension is also paid to about 1.1 million people living abroad (about £5.7bn), which belongs to no area and is included in the comparison with DWP below. ':''}Most of the total is pensions: <b>${fmtP(100*bens.filter(b=>['SP','PC','AA'].includes(b.source)).reduce((s,b)=>s+b.annual_spend_gbp,0)/totSpend)}</b> goes to State Pension, Pension Credit and Attendance Allowance.</div>
+     <div style="overflow-x:auto"><table class="tx"><tr><th>Benefit</th><th>Data from</th><th class="n">Cases or households</th><th class="n">Average award</th><th class="n">Annualised spend</th><th class="n">Share</th></tr>${bens.map(b=>`<tr><td>${esc(b.title.replace(' (with monthly payment amount)',''))} ${hq(BEN_TERM[b.source])}</td><td class="it">${esc(b.period)}</td><td class="n">${fmtN(b.total)}</td><td class="n">${fmtGBP(b.mean_amount)} per ${b.amount_per}</td><td class="n">${fmtM(b.annual_spend_gbp)}</td><td class="n">${fmtP(100*b.annual_spend_gbp/totSpend)}</td></tr>`).join('')}</table></div>${recon}
+     <div class="note" style="border-color:#2a7"><b>Reading this fairly.</b> Every payment above is a legal entitlement set by Parliament and decided by rules: age and National Insurance record for the State Pension; the effect of a health condition on daily life for PIP; household circumstances (children, rent, disability, caring, earnings) for Universal Credit. Higher spend in an area usually reflects more pensioners, more disability, higher rents or more children, not different behaviour. These are counts of people in each situation, not judgements about any of them. See "Why people are paid" under each benefit below, and the <a href="#glossary/benefit_kinds">glossary</a>.</div>`:''}
+   ${d.metrics.length?`<h3 class="sec">Measures for ${esc(a.name)} with the year each describes</h3><div class="mgroups">${groups.map((g,gi)=>`<details class="mgroup"${gi<1?' open':''}><summary><span class="mg-t">${esc(g)}</span><span class="mg-n">${d.metrics.filter(m=>m.group===g).length} measures</span></summary><div style="overflow-x:auto"><table class="tx"><tr><th>Measure</th><th class="n">${esc(a.name)}</th><th class="n">England and Wales</th><th class="n">Rank</th><th>Data from</th></tr>${d.metrics.filter(m=>m.group===g).map(mrow).join('')}</table></div></details>`).join('')}</div>
+    <div class="note">Rank 1 = highest among areas of the same kind. Rows marked estimate are our calculations from published figures. Census counts are usual residents on 21 March 2021 and describe the population then, not now.</div>`:''}
+   ${(d.benefits||[]).length?`<h3 class="sec">Benefits and claimants in detail (DWP Stat-Xplore)</h3><div class="note">Open a benefit for why people receive it, who gets it and what makes the amount higher or lower, with counts and annualised spend by age, sex, condition, award type, family type and more. Counts are rounded by DWP. ${hq('rounded_counts')}</div>${d.benefits.map(b=>`<details><summary><b>${esc(b.title)}</b> ${hq(BEN_TERM[b.source])} <span class="it">${esc(b.period||'')}</span>: ${fmtN(b.total)}${b.mean_amount?` · average ${fmtGBP(b.mean_amount)} per ${b.amount_per}`:''}${b.annual_spend_gbp?` · ${fmtM(b.annual_spend_gbp)} a year`:''}</summary>${explain(b)}
+      ${(b.history||[]).length?`<div class="note">By year: ${b.history.map(h=>esc(h.period)+' '+fmtN(h.total)).join(' · ')}</div>`:''}
+      ${Object.entries(b.breakdowns).map(([bd,rs])=>bdTable(bd,rs,b.amount_per)).join('')}</details>`).join('')}`:''}
+   ${Object.keys(d.census).length?`<h3 class="sec">Full census breakdown (21 March 2021)</h3>${Object.entries(d.census).map(([t,c])=>`<details><summary><b>${esc(c.variable)}</b> <span class="it">(${t.toUpperCase()})</span></summary><div style="overflow-x:auto"><table class="tx"><tr><th>Category</th><th class="n">People</th><th class="n">% here</th><th class="n">% England and Wales</th></tr>${c.rows.map(r=>`<tr><td style="padding-left:${6+r.depth*14}px">${esc(r.label.split(' > ').pop())}</td><td class="n">${fmtN(r.count)}</td><td class="n">${r.pct==null?'':fmtP(r.pct)}</td><td class="n">${r.ew_pct==null?'':fmtP(r.ew_pct)}</td></tr>`).join('')}</table></div></details>`).join('')}`:''}
+   ${f2.length?`<h3 class="sec">What the council spends ${hq('council_spend')}</h3><div class="note">${lv==='constituency'?'<b>Estimated</b> by apportioning each council\'s net current expenditure (latest year it submitted) by the share of its residents who live in this constituency; district and county councils are both included. It is not a published constituency figure.':lv==='local_authority'?'The council\'s own net current expenditure by service (latest year submitted). Per head uses the mid-2025 population.':'England\'s councils added up (latest year each submitted). Per head uses Census 2021 residents.'}</div>
+    <div style="overflow-x:auto"><table class="tx"><tr><th>Service</th><th>Year</th><th class="n">Net current expenditure</th><th class="n">£ per head</th><th class="n">England average £ per head</th></tr>${f2.map(x=>`<tr><td>${esc(x.service)}</td><td class="it">${esc(x.years||'')}</td><td class="n">${fmtGBPm(x.estimated_k)}</td><td class="n">${fmtN(x.per_head_gbp)}</td><td class="n">${d.england_per_head[x.service.replace(' (county council)','')]!=null?fmtN(d.england_per_head[x.service.replace(' (county council)','')]):''}</td></tr>`).join('')}</table></div>`:''}
+   ${(lv==='constituency'||lv==='local_authority')?`<h3 class="sec">Where government money lands (by recipient postcode) ${hq('recipient_postcode')}</h3><div class="note">Payments over £25,000 (2025-26) and grants (all years loaded) are placed where the recipient is registered, not where the money is spent. Head offices of large recipients distort this.</div>
+   ${Object.keys(kinds).length?bars(Object.entries(kinds).map(([k,v])=>({label:k,value:v.a,text:fmtGBPm(v.a/1000)})),{unit:'£'}):'<div class="note">Nothing placed here.</div>'}
+   ${d.payments_by_department.length?`<h3 class="sec">Departments paying recipients here (2025-26 payments and grants)</h3>`+bars(d.payments_by_department.map(x=>({label:x.department+(x.source==='grants'?' (grants)':''),value:x.amount_gbp,text:fmtGBPm(x.amount_gbp/1000)})),{unit:'£'}):''}
+   ${d.payments_by_category.length?`<h3 class="sec">What the money is for (payment category or grant scheme)</h3>`+bars(d.payments_by_category.map(x=>({label:x.category||'unclassified',value:x.amount_gbp,text:fmtGBPm(x.amount_gbp/1000)})),{unit:'£'}):''}
+   ${d.suppliers.length?`<h3 class="sec">Largest recipients here (2025-26)</h3>`+bars(d.suppliers.map(x=>({label:x.supplier,value:x.amount_gbp,text:fmtGBPm(x.amount_gbp/1000)})),{unit:'£'}):''}`:''}
+   <div class="note">Data behind this: <a href="#data/census_value">census_value</a>, <a href="#data/place_metric">place_metric</a>, <a href="#data/benefit_spend">benefit_spend</a>, <a href="#data/dwp_area">dwp_area</a>, <a href="#data/geo_pcon_authority">geo_pcon_authority</a>, <a href="#data/la_spend_latest">la_spend_latest</a>, <a href="#data/place_payment">place_payment</a>. <a href="#data/sql">SQL console</a>.</div>
+   ${srcBox([['ons_census_2021','census tables TS001 to TS067 by output area'],['ons_postcode_directory','geography lookups'],['mhclg_la_finance','revenue outturn time series'],['spend_dft','payment files placed by postcode'],['grants_register','grants placed by postcode'],['dwp_statxplore','benefit counts and average awards by constituency and authority'],['dwp_benefit_tables','DWP expenditure, for the comparison with our estimate']],['PLC-DQ-01','PLC-DQ-02','PLC-DQ-04','PLC-DQ-06','DWP-SX-01','DWP-SX-02'])}`;
+  bindSearch();
+  {const enc=encodeURIComponent,gbH='#areas/country/Great%20Britain';let ch=[{t:'Local Gov',h:'#areas'}];if(lv==='country'&&a.code==='Great Britain')ch.push({t:'Great Britain'});else{ch.push({t:'Great Britain',h:gbH});if(a.country&&a.code!==a.country&&lv!=='country')ch.push({t:a.country,h:'#areas/country/'+enc(a.country)});if(a.region&&a.region!==a.country&&lv!=='region'&&lv!=='country')ch.push({t:a.region,h:'#areas/region/'+enc(a.region)});ch.push({t:a.name+(lv==='constituency'?' (constituency)':lv==='local_authority'?' (local authority)':'')})}state.crumbs=ch;crumbs()}
+  if(M&&window.DASH){const dd=document.getElementById('dash');if(dd){try{DASH.mount(dd,d,M,{kind:lv,ewCensus:ewc,go:h=>{location.hash=h},hq,src:srcBox([['ons_census_2021','Census 2021 by output area, added up to constituencies'],['ons_postcode_directory','tile positions from postcode centres'],['dwp_statxplore','benefit counts and average awards, combinations, sanctions'],['mhclg_la_finance','council revenue outturn, apportioned'],['spend_dft','departmental payments placed by recipient postcode'],['grants_register','grants register']],['PLC-DQ-01','PLC-DQ-02','PLC-DQ-04','DWP-SX-01','DWP-SX-02','DWP-SX-04'])})}catch(e){dd.innerHTML='<div class="note">The dashboard could not be drawn ('+esc(e.message)+'); the tables below still work.</div>';console.error(e)}}}
+}
+async function glossaryView(){
+  const G=await glossary(),id=state.path[0];
+  $('#hero').innerHTML=`Glossary<small>What the terms on this site mean in plain words: money, tax, benefits (and why people are paid them), the census, places and immigration. Look here before drawing a conclusion from a number.</small>`;
+  const card=t=>`<div class="panel" id="g-${esc(t.id)}"><h3 style="margin:0">${esc(t.term)}</h3><p><b>${esc(t.short)}</b></p><p>${esc(t.long||'')}</p>
+    ${t.why_paid?`<div class="note" style="border-color:#2a7"><b>Why people are paid this</b><br>${esc(t.why_paid)}${t.who?`<br><br><b>Who receives it:</b> ${esc(t.who)}`:''}${t.amount?`<br><br><b>How the amount is set:</b> ${esc(t.amount)}`:''}${t.avoid_blame?`<br><br><b>Reading it fairly:</b> ${esc(t.avoid_blame)}`:''}</div>`:''}
+    ${t.not_this?`<div class="note"><b>What it is not:</b> ${esc(t.not_this)}</div>`:''}
+    ${(t.see||[]).length?`<div class="related"><span>See also:</span>${t.see.map(s=>{const x=G.terms.find(y=>y.id===s);return x?`<a href="#glossary/${esc(s)}">${esc(x.term)}</a>`:''}).join('')}</div>`:''}
+    ${t.used_by&&t.used_by.length?`<div class="it">Used for: ${t.used_by.map(esc).join('; ')}</div>`:''}${t.source?`<div class="it">Source and current rules: <a href="${esc(t.source)}" target="_blank" rel="noopener">${esc(t.source)}</a></div>`:''}</div>`;
+  if(id){const t=G.terms.find(x=>x.id===id);$('#view').innerHTML=`<div class="related"><span>Glossary:</span><a href="#glossary">All terms</a></div>`+(t?card(t):`<div class="note">No term called ${esc(id)}.</div>`);return}
+  $('#view').innerHTML=`<input id="gq" type="search" placeholder="Search terms (try: PIP, outturn, unemployed, per 100, deprivation)" style="width:100%;padding:10px;font-size:16px"><div id="glist">${G.categories.map(c=>{const ts=G.terms.filter(t=>t.category===c);return ts.length?`<h2 class="gcat">${esc(c)}</h2>`+ts.map(t=>`<div class="bar-row" data-href="#glossary/${esc(t.id)}" data-q="${esc((t.term+' '+t.short+' '+(t.long||'')).toLowerCase())}" tabindex="0"><div class="lab">${esc(t.term)}<em>${esc(t.short)}</em></div><div class="val"></div></div>`).join(''):''}).join('')}</div>`;
+  const f=()=>{const v=$('#gq').value.toLowerCase();document.querySelectorAll('#glist .bar-row').forEach(r=>r.style.display=r.dataset.q.includes(v)?'':'none');document.querySelectorAll('#glist .gcat').forEach(h=>{let n=h.nextElementSibling,vis=false;while(n&&!n.classList.contains('gcat')){if(n.style.display!=='none')vis=true;n=n.nextElementSibling}h.style.display=vis?'':'none'})};
+  $('#gq').addEventListener('input',f);
+}
+async function yearsView(){
+  const d=await api('vintages');let up=null;try{up=await api('update-status')}catch(e){if(e instanceof Stale)throw e}
+  $('#hero').innerHTML=`Data years<small>The period each source describes, when it was published and how often it changes. Never assume two figures are from the same year.</small>`;
+  $('#view').innerHTML=`<div class="related"><span>Data:</span><a href="#data">All tables</a><a href="#data/sql">SQL console</a><a href="#data/years">Data years</a><a href="#glossary">Glossary</a></div><div class="note">Database last built: <b>${esc(d.built||'unknown')}</b>. 'In our data' is the period actually found in the loaded table; 'Describes' is the source's own statement. The site does not treat any source as current unless this page says so.</div>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Source</th><th>Describes</th><th>In our data</th><th>Published</th><th>Updated</th><th>Watch for</th></tr>${d.sources.map(s=>`<tr><td><b>${esc(s.name)}</b><div class="it">${s.tables.split(', ').map(t=>`<a href="#data/${esc(t)}">${esc(t)}</a>`).join(', ')}</div></td><td>${esc(s.describes)}</td><td>${esc(s.in_our_data||'')}</td><td>${esc(s.published)}</td><td>${esc(s.update_pattern)}</td><td>${esc(s.caveat||'')}</td></tr>`).join('')}</table></div>`;
+  if(up&&up.last_update){const L=up.last_update,ran=L.steps.filter(r=>r.action==='run'),sk=L.steps.filter(r=>r.action==='skip');$('#view').insertAdjacentHTML('beforeend',`<h3 class="sec">Last update</h3><div class="note">Finished ${esc(L.finished)}. ${ran.length} of the ${L.steps.length} slow loading steps were rebuilt and ${sk.length} were skipped because their input files had not changed. To bring the data up to date, run <code>make update</code> on the server; <code>make update-status</code> shows what is out of date.</div><div style="overflow-x:auto"><table class="tx"><tr><th>Step</th><th>What happened</th><th>Why</th><th class="n">Seconds</th><th>Last rebuilt</th></tr>${L.steps.map(r=>{const m=up.steps.find(x=>x.step===r.step)||{};return `<tr><td>${esc(r.step)}</td><td>${r.action==='run'?'rebuilt':'skipped'}</td><td>${esc(r.reason)}</td><td class="n">${Math.round(r.seconds)}</td><td>${esc((m.last_rebuilt||'').slice(0,10))}</td></tr>`}).join('')}</table></div>`)}
+}
+async function peopleView(o){
+  const d=await api('workforce/overview');
+  let wrk=[];try{TERMS=Object.fromEntries((await glossary()).terms.map(t=>[t.id,t]));wrk=(await api('claims',{topic:'size'})).claims.filter(c=>/^WRK-/.test(c.claim_id))}catch(e){if(e instanceof Stale)throw e}
+  $('#hero').innerHTML=`${nStaff(d.headcount)}<small>civil servants at ${d.as_at}: ${nStaff(d.fte)} full-time equivalent; median salary ${gbpN(d.median_salary)}</small>`;
+  const link=x=>DEPT_GROUP[x.pesa_name]&&x.pesa_name!=='Small and Independent Bodies'?'#remit/'+DEPT_GROUP[x.pesa_name]+'/'+x.pesa_name:null;
+  $('#view').innerHTML=`<h2>Who works for government departments</h2>
+   <div class="note">These are <b>civil servants</b> (Cabinet Office statistics). Most of the people the state pays are not civil servants: the NHS, teachers, police, the armed forces and council staff are shown below the table, in proportion to the whole public sector. Numbers are rounded to the nearest five. Salaries are gross full-time-equivalent annual pay (before pension and employer costs), so they cannot be multiplied by headcount to get a pay bill. Scottish and Welsh Government staff are included because their civil servants are in the same statistics.</div>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Department</th><th class="n">People</th><th class="n">Full-time equivalent</th><th class="n">Senior Civil Service</th><th class="n">Median salary</th><th class="n">Top earner : median</th><th class="n">Women</th></tr>
+   ${d.departments.map(x=>`<tr><td>${link(x)?`<a data-href="${esc(link(x))}">${esc(x.parent)}</a>`:esc(x.parent)}${x.pesa_name==='Small and Independent Bodies'?'<div class="it">non-ministerial or small body</div>':''}</td><td class="n">${nStaff(x.headcount)}</td><td class="n">${nStaff(x.fte)}</td><td class="n">${nStaff(x.scs)}</td><td class="n">${gbpN(x.median_salary)}</td><td class="n">${x.ratio?x.ratio.toFixed(1):'–'}</td><td class="n">${x.female_share!=null?Math.round(100*x.female_share)+'%':'–'}</td></tr>`).join('')}</table></div>
+   <h3>Across the whole civil service, by grade</h3>${bars(d.grades.filter(g=>g.headcount).map(g=>({label:g.label,sub:g.median_salary?`median salary ${gbpN(g.median_salary)}`:'',value:g.headcount,text:nStaff(g.headcount)})))}
+   <h3>Salary bands (gross annual salary, everyone)</h3>${bars(d.salary_bands.filter(b=>b.headcount).map(b=>({label:(/^\d/.test(b.band)?'£':'')+b.band,value:b.headcount,text:nStaff(b.headcount)})))}
+   <p class="sub">Salary by department and band is not published in these tables; pay by grade and by department is shown on each department's page.</p>
+   ${wrk.length?`<h2>Who else the state pays</h2><div class="note">The first panel puts civil servants in proportion to the whole public sector. These panels use each service's own published workforce file, with the ONS total as the yardstick. Each source has its own definition and date, so the groups cannot be added together (see data issue WF-01). Every figure is computed from the data on the <a href="#data">Data</a> tab.</div>${wrk.map(claimCard).join('')}`:''}`;
+  $('#view').querySelectorAll('[data-cite]').forEach(b=>b.onclick=()=>{const c=wrk.find(x=>x.claim_id===b.dataset.cite);if(!c)return;const t=`${c.claim_id}: ${c.headline} (NewGov, ${location.origin}/#people, as at ${c.as_at||'see Data years'})`;navigator.clipboard&&navigator.clipboard.writeText(t);b.textContent='Copied'});
+  $('#note').innerHTML=srcBox([['cs_statistics','tables 6, 20, 21, 25, 26 and B'],['ons_pse','public sector employment tables 1 to 4'],['nhs_workforce','HCHS staff group, grade, nationality'],['dfe_school_workforce','workforce and teacher pay'],['ho_police_workforce','tables H1 to H8'],['mod_service_personnel','worksheets 1, 4, 11a, 13']],['CSW-01','CSW-02','CSW-03','CSW-04','CSW-05','WF-01','WF-02','WF-03','WF-04'])}
+async function restartPanel(){
+  const r=await fetch('/api/dwp/restart');if(!r.ok)return '';const d=await r.json();if(!d.areas.length)return '';
+  const pc=v=>v==null?'–':Math.round(100*v)+'%',k=v=>v==null?'–':(v>=1000?(v/1000).toLocaleString('en-GB',{maximumFractionDigits:0})+'k':v);
+  return `<h2>Restart Scheme: one programme, twelve contract areas</h2>
+   <p class="sub">The Restart Scheme pays private providers to help long-term Universal Credit claimants into work. England and Wales are split into twelve contract package areas, each held by one provider. ${fmt(d.paid_total_m)} was paid to providers in ${d.fy}, visible in the payment files because the cost centre names the area.</p>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Area</th><th>Provider</th><th class="n">Paid ${d.fy}</th><th class="n">Referred (since 2021)</th><th class="n">Starts</th><th class="n">Job outcomes</th><th class="n">vs minimum expected</th><th class="n">vs target</th></tr>
+   ${d.areas.map(a=>`<tr><td><b>${esc(a.cpa.toUpperCase())}</b> ${esc(a.area_name)}<div class="it">${esc(a.areas_contained)}</div></td><td>${esc(a.provider)}${a.paid_to.length?`<div class="it">paid as: ${esc(a.paid_to.join(', '))}</div>`:''}</td><td class="n">${fmt(a.paid_m)}</td><td class="n">${k(a.referred)}</td><td class="n">${k(a.starts)}</td><td class="n">${k(a.job_outcomes)}</td><td class="n">${pc(a.vs_min)}</td><td class="n">${pc(a.vs_target)}</td></tr>`).join('')}</table></div>
+   <div class="note">Participant and job-outcome figures are DWP's official statistics (in development), rounded, and cumulative from July 2021 to ${d.areas[0].stats_to}; payments are cash paid in the single year shown, so do not divide one by the other. "Job outcome" means earnings above a threshold sustained for the contract's period. "Minimum" and "target" are the contract's own expected job outcomes to date; 100% means the provider has reached that level. The areas are groups of local authorities, not regions, and a few district names in the official list have since merged.</div>`}
+async function wcaPanel(){
+  const r=await fetch('/api/dwp/wca');if(!r.ok)return '';const d=await r.json();if(!d.series.length)return '';
+  const last=d.series[d.series.length-1],sh=(x)=>(100*x/last.total).toFixed(0)+'%',kf=v=>Math.round(v).toLocaleString('en-GB')+'k';
+  const ct=d.conditions_total,top=d.conditions.filter(c=>!/^No information/.test(c.condition)).slice(0,8),noinfo=d.conditions.find(c=>/^No information/.test(c.condition));
+  return `<h2>Work Capability Assessment decisions on Universal Credit</h2>
+   <p class="sub">People claiming Universal Credit with a health condition are assessed to decide whether they can work. In ${esc(last.month)}, ${last.total.toLocaleString('en-GB')} decisions were made: ${sh(last.limited_and_work_related)} found <b>limited capability for work and work-related activity</b> (the highest level, no work requirements), ${sh(last.limited)} limited capability for work, and ${sh(last.no_limited)} no limited capability.</p>
+   ${lineChart(d.series.map(x=>({fiscal_year:x.month.replace(/ \d{2}(\d{2})$/,' $1'),basis:'outturn',value:x.total/1000})),'WCA decisions per month (thousands)',{fmtv:kf,unit:'thousand decisions'})}
+   <h3>By medical condition (decisions since January 2022)</h3>
+   ${bars(top.map(c=>({label:c.condition.replace(/\s*\(.*$/,''),sub:`${Math.round(100*c.limited_capability_and_work_related/c.decisions)}% found limited capability for work and work-related activity; ${Math.round(100*c.no_limited_capability/c.decisions)}% no limited capability`,value:c.decisions,text:Math.round(c.decisions/1000).toLocaleString('en-GB')+'k decisions'})),{unit:'decisions'})}
+   <div class="note">Source: DWP Universal Credit Health statistics, tables 4 and 5 (Stat-Xplore and Medical Services referral data). Counts for conditions are rounded by DWP, a person can have several conditions so conditions add to more than the total decisions (${ct.decisions.toLocaleString('en-GB')} decisions in all), and ${noinfo?`${Math.round(100*noinfo.decisions/ct.decisions)}% of decisions have no condition recorded`:'some decisions have no condition recorded'}. A decision is about capability for work under the rules, not a measure of how many people are disabled. Monthly numbers include a catch-up of decisions on people moved over from the old Employment and Support Allowance, which DWP reports separately.</div>`}
+async function supplyPanel(dept){
+  const r=await fetch('/api/supply?'+new URLSearchParams({dept}));if(!r.ok)return '';const d=(await r.json()).departments[0];if(!d)return '';
+  const t=d.total,g=v=>fmt(v),pc=(a,b)=>b?(100*a/b).toFixed(0)+'%':'–',under=t.estimate_gbp_m-t.outturn_gbp_m;
+  const row=(label,x,note)=>({label,sub:`voted ${g(x.estimate_gbp_m)}; ${x.outturn_gbp_m>=x.estimate_gbp_m?'overspent':'underspent'} by ${g(Math.abs(x.estimate_gbp_m-x.outturn_gbp_m))}; last year spent ${g(x.prior_year_outturn_gbp_m)}${note?'. '+note:''}`,value:x.outturn_gbp_m,text:`${g(x.outturn_gbp_m)} (${pc(x.outturn_gbp_m,x.estimate_gbp_m)} of voted)`});
+  return `<h2>Did it spend what Parliament voted? (2025-26)</h2>
+   <div class="kpi"><div><b>${g(t.outturn_gbp_m)}</b><span>spent (outturn), against ${g(t.estimate_gbp_m)} in the Supply Estimate (${pc(t.outturn_gbp_m,t.estimate_gbp_m)})</span></div><div><b>${g(Math.abs(under))}</b><span>${under>=0?'under':'over'} the Estimate; ${g(t.prior_year_outturn_gbp_m)} was spent in 2024-25</span></div></div>
+   ${bars([row('Departmental Expenditure Limit (the part Parliament caps)',d.del),row('Annually Managed Expenditure (demand-led, such as benefits and provisions)',d.ame)])}
+   <div class="note">The Estimate is the amount Parliament was asked to approve; outturn is what the audited accounts record. An underspend is <b>not</b> a saving by itself: the Estimate can include a margin for uncertainty, non-cash charges such as depreciation and provisions, and spending that slipped to a later year. For Annually Managed Expenditure the Estimate is a forecast of demand, so a large gap usually means the forecast was off, not that money was saved. Source figures are as published, in cash terms on an accounts basis, so they will not match the payment files.</div>`}
+async function lossesPanel(dept){
+  if(dept==='Work and Pensions')return '';
+  const r=await fetch('/api/losses?'+new URLSearchParams({dept}));if(!r.ok)return '';const d=await r.json();if(!d.n)return '';
+  const m=v=>v==null?'–':moneyM(v);
+  const tot=(k,fy)=>{const x=d.totals.filter(t=>t.kind===k&&t.fiscal_year===fy);return x.find(t=>/core|department$/.test(t.scope))||x[0]};
+  const lt=tot('Loss','2025-26'),lp=tot('Loss','2024-25'),st=tot('Special payment','2025-26'),sp=tot('Special payment','2024-25');
+  const top=d.items.filter(x=>!x.part_of),kids=n=>d.items.filter(x=>x.part_of===n);
+  const row=x=>`<tr><td>${esc(x.item)}<div class="it">${esc(x.what_it_is)}</div>${kids(x.item).map(k=>`<div class="it">&nbsp;&nbsp;– ${esc(k.item)}: ${m(k.amount_gbp_m)}${k.what_it_is?' ('+esc(k.what_it_is)+')':''}</div>`).join('')}</td><td>${esc(x.kind)}<div class="it">${esc(x.scope)}</div></td><td class="n">${x.cases!=null?x.cases.toLocaleString('en-GB'):'–'}</td><td class="n">${m(x.amount_gbp_m)}</td></tr>`;
+  return `<h2>Losses and special payments (accounts 2025-26)</h2>
+   <div class="kpi">${lt?`<div><b>${m(lt.amount_gbp_m)}</b><span>losses recorded${lt.cases?` (${lt.cases.toLocaleString('en-GB')} cases)`:''}${lp?`; ${m(lp.amount_gbp_m)} the year before`:''} (${esc(lt.scope)})</span></div>`:''}${st?`<div><b>${m(st.amount_gbp_m)}</b><span>special payments${st.cases?` (${st.cases.toLocaleString('en-GB')} cases)`:''}${sp?`; ${m(sp.amount_gbp_m)} the year before`:''}</span></div>`:''}</div>
+   <div class="note">From the audited accounts (${esc(d.page)}). A <b>loss</b> is something Parliament could not have foreseen when it voted the money: write-offs, cash losses, and "constructive losses" where money was spent on something that delivered no value, such as a cancelled scheme. A <b>special payment</b> goes beyond legal liability: compensation, ex gratia payments, severance. Many small cases are grouped, and the accounts list individually only those over £300,000, so this is the notable part, not everything. A loss is not necessarily avoidable or wrongdoing.</div>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Item</th><th>Type</th><th class="n">Cases</th><th class="n">Amount</th></tr>${top.map(row).join('')}</table></div>`}
+async function grantsPanel(dept){
+  const r=await fetch('/api/grants?'+new URLSearchParams({dept}));if(!r.ok)return '';const d=await r.json();if(!d.n)return '';
+  const mm=v=>fmt(v);
+  return `<h2>Grants this department funds (register, ${d.fy})</h2>
+   <div class="kpi"><div><b>${mm(d.scheme_value_gbp_m)}</b><span>paid through ${d.n} grant schemes in ${d.fy}</span></div><div><b>${(d.awards_n).toLocaleString('en-GB')}</b><span>individual awards on the register, ${mm(d.awards_value_gbp_m)}</span></div></div>
+   <div class="note"><b>Grants are not payments to suppliers for goods and services.</b> They are money paid to councils, schools, charities, universities and companies under a scheme, so they do not appear in the payment files above, and they are a large part of what those files cannot show. Do not add them to the payments. The register is the Cabinet Office's, for the financial year ${d.fy} (older than the 2025-26 budget shown elsewhere); some awards are left out (redacted), and recipient types are worked out from names and identifiers, so treat them as approximate.</div>
+   <h3>How the money is allocated</h3>${bars(d.methods.map(m=>({label:m.label,sub:m.n+' scheme'+(m.n===1?'':'s'),value:m.value})))}
+   <p class="sub">"Formula" grants are shared out by a published formula (for example the Dedicated Schools Grant). "General" grants are decided by the department: competed (applications scored), uncompeted (direct awards), criteria-based or mixed.</p>
+   <h3>Who receives it (by type of recipient, from award records)</h3>${bars(d.recipient_kinds.map(k=>({label:k.label,sub:k.n.toLocaleString('en-GB')+' awards',value:k.value})))}
+   <h3>Largest schemes</h3>${bars(d.schemes.map(x=>({label:x.title,sub:[x.allocation_method,x.cofog,x.managed_by&&x.managed_by!==dept?'run by '+x.managed_by:''].filter(Boolean).join(' · ')+(x.description?' — '+x.description.slice(0,170)+(x.description.length>170?'…':''):''),value:x.value})))}
+   <h3>Largest recipients</h3>${bars(d.top_recipients.map(x=>({label:x.name||'(not stated)',sub:x.kind+' · '+x.n.toLocaleString('en-GB')+' award'+(x.n===1?'':'s')+(x.company_no?' · company '+x.company_no:''),value:x.value,href:x.company_no?'#suppliers/'+x.company_no:null})))}`}
+async function reliancePanel(dept){
+  const r=await fetch('/api/reliance');if(!r.ok)return '';const x=(await r.json()).departments.find(d=>d.pesa_name===dept);if(!x)return '';
+  const pc=v=>v==null?'–':Math.round(100*v)+'%';
+  return `<h2>How much it relies on a few suppliers and on contractors</h2>
+   <div class="kpi"><div><b>${pc(x.top5_share)}</b><span>of supplier payments (${fmt(x.supplier_paid_gbp_m)}, ${esc(x.fy)}) go to its five largest suppliers; the largest, ${esc(x.top1_name)}, takes ${pc(x.top1_share)}</span></div><div><b>${x.n_for_half}</b><span>supplier${x.n_for_half===1?'':'s'} account for half of all supplier payments, out of ${x.n_suppliers.toLocaleString('en-GB')}</span></div>
+    ${x.contracts_n?`<div><b>${pc(x.share_direct)}</b><span>of ${x.contracts_n.toLocaleString('en-GB')} contract awards in 2025-26 were direct awards or had no competition (${pc(x.share_competed)} competed, ${pc(x.share_framework)} framework call-offs)</span></div>`:''}
+    ${x.contractor_share_of_workforce!=null?`<div><b>${pc(x.contractor_share_of_workforce)}</b><span>of its workforce (${x.non_payroll_headcount.toLocaleString('en-GB')} people, ${esc(x.workforce_month)} return) are contractors, agency or interim staff rather than on the payroll</span></div>`:''}</div>
+   ${await servicesBlock(dept)}
+   <div class="note">Concentration is a fact about the market as much as the department: a few suppliers can build submarines or run nuclear sites, and many can supply laptops. Nothing here says a department is doing something wrong. Figures cover payments over £25,000 to suppliers (not grants, public bodies or accounting entries) in the latest year published; shares are of the visible payments only. <a data-href="#reliance">Compare all departments, and see which businesses deal with many</a>.</div>`}
+const SVC_NOTE="Kinds of service are worked out from the words in the department's own ledger labels and descriptions with one common set of rules, so the same kind of spending is comparable across departments. It is a convenience, not an audited coding, and where a department files something under a label (for example a facilities contract under 'professional services') it is shown as the department labels it.";
+async function servicesBlock(dept){
+  const r=await fetch('/api/services?'+new URLSearchParams({dept}));if(!r.ok)return '';const d=await r.json();if(!d.n)return '';
+  const pc=v=>v==null?'–':Math.round(100*v)+'%',m=v=>fmt(v);
+  const prof=d.professional,pshare=prof.total_gbp_m/d.total_gbp_m;
+  const hot=d.classes.filter(c=>c.service_class!=='Other or not described'&&c.value_gbp_m>=5&&(c.top1_share>=0.4||c.top5_share>=0.85));
+  return `<h3>What it buys from suppliers (kind of service, ${esc(d.fy)})</h3>
+   ${bars(d.classes.filter(c=>c.value_gbp_m>=0.05).map(c=>({label:c.service_class,sub:`${c.n_suppliers.toLocaleString('en-GB')} supplier${c.n_suppliers===1?'':'s'}; largest ${c.top1_name} takes ${pc(c.top1_share)}, top five ${pc(c.top5_share)}`,value:c.value_gbp_m})))}
+   <p class="sub">${esc(SVC_NOTE)} ${pc(d.unclassified_share)} of the value could not be classed from the labels.</p>
+   ${hot.length?`<div class="note"><b>Where one or a few suppliers dominate a kind of buying:</b> ${hot.map(c=>`${esc(c.service_class.toLowerCase())} (${m(c.value_gbp_m)}): ${esc(c.top1_name)} ${pc(c.top1_share)}, top five ${pc(c.top5_share)}`).join('; ')}.</div>`:''}
+   <h3>Consultancy, professional services, legal and contingent labour: ${m(prof.total_gbp_m)} (${pc(pshare)} of supplier payments)</h3>
+   ${prof.labels.length?`<p class="sub">How the department itemises it in its own ledger, largest labels first:</p><div style="overflow-x:auto"><table class="tx"><tr><th>Ledger label</th><th>Counted as</th><th class="n">Paid</th><th class="n">Payments</th><th>Largest supplier</th></tr>${prof.labels.map(x=>`<tr><td>${esc(x.label)}</td><td>${esc(x.service_class)}</td><td class="n">${m(x.value_gbp_m)}</td><td class="n">${x.n.toLocaleString('en-GB')}</td><td>${esc(x.top_supplier)}</td></tr>`).join('')}</table></div>`:''}
+   ${prof.suppliers.length?`<p class="sub">Largest suppliers of these services:</p>${bars(prof.suppliers.map(x=>({label:x.supplier,sub:x.service_class+' · '+x.n.toLocaleString('en-GB')+' payments',value:x.value_gbp_m,href:x.company_no?'#suppliers/'+x.company_no:null})))}`:''}
+   ${prof.largest_payments.length?`<p class="sub">Largest individual payments:</p><div style="overflow-x:auto"><table class="tx"><tr><th>Date</th><th>Paid to</th><th>For</th><th class="n">£ million</th></tr>${prof.largest_payments.map(x=>`<tr><td>${x.date}</td><td>${esc(x.supplier)}<div class="it">${esc(x.service_class)}</div></td><td>${esc(x.label)}<div class="it">${esc(x.text&&x.text!=='#'?x.text:'')}</div></td><td class="n">${x.value_gbp_m.toLocaleString('en-GB',{maximumFractionDigits:2})}</td></tr>`).join('')}</table></div>`:''}`}
+async function relianceView(o){
+  const [rl,rc,cs]=await Promise.all([api('reliance'),api('reach',{by:state.reach.by,limit:25}),api('consulting')]);
+  const pc=v=>v==null?'–':Math.round(100*v)+'%',pc1=v=>v==null?'–':(100*v).toFixed(1)+'%';
+  const multi=rc.by_departments.filter(g=>/^(3|5)/.test(g.group)),multiShare=multi.reduce((a,g)=>a+g.share,0),multiN=multi.reduce((a,g)=>a+g.businesses,0);
+  $('#hero').innerHTML=`${pc(rc.top50_share)}<small>of ${fmt(rc.payments_total_gbp_m)} paid to suppliers goes to just 50 of ${rc.n_businesses_paid.toLocaleString('en-GB')} businesses; ${multiN.toLocaleString('en-GB')} businesses are paid by three or more departments</small>`;
+  const link=n=>DEPT_GROUP[n]?'#remit/'+DEPT_GROUP[n]+'/'+n:null;
+  const d=rl.departments;
+  $('#view').innerHTML=`<h2>How far government relies on a few companies and on contractors</h2>
+   <div class="note">This looks at <b>payments over £25,000 to suppliers</b> (not grants, public bodies, student finance or accounting entries), contract awards, and the monthly workforce returns. It shows concentration, not wrongdoing: some markets have few suppliers. Payment figures are the first recipient in each department's latest published year, and only the part of spending the files show. Businesses are identified by Companies House number or name, and the ownership of corporate groups is not loaded, so a group appears as several businesses unless it is in the short brand list below.</div>
+   <div class="kpi"><div><b>${pc(rc.top10_share)}</b><span>of supplier payments go to the top 10 businesses</span></div><div><b>${pc(rc.top50_share)}</b><span>to the top 50</span></div><div><b>${pc(rc.top1000_share)}</b><span>to the top 1,000 (of ${rc.n_businesses_paid.toLocaleString('en-GB')})</span></div><div><b>${pc(multiShare)}</b><span>to the ${multiN.toLocaleString('en-GB')} businesses that several departments pay (three or more)</span></div></div>
+   <h3>Businesses by how many departments pay them</h3>${bars(rc.by_departments.map(g=>({label:g.group,sub:g.businesses.toLocaleString('en-GB')+' businesses · '+pc1(g.share)+' of supplier payments',value:g.payments_gbp_m})))}
+   <h3>Department by department</h3>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Department</th><th class="n">Paid to suppliers</th><th>Largest supplier</th><th class="n">Top 5 share</th><th class="n">Suppliers for half</th><th class="n">Contracts 2025-26</th><th class="n">Direct awards</th><th class="n">Small and medium firms</th><th class="n">Contractors in workforce</th><th class="n">Contractor cost vs payroll</th></tr>
+   ${d.map(x=>`<tr><td>${link(x.pesa_name)?`<a data-href="${esc(link(x.pesa_name))}">${esc(x.pesa_name)}</a>`:esc(x.pesa_name)}<div class="it">${esc(x.fy)}</div></td><td class="n">${fmt(x.supplier_paid_gbp_m)}</td><td>${esc(x.top1_name)} <span class="it">${pc(x.top1_share)}</span></td><td class="n">${pc(x.top5_share)}</td><td class="n">${x.n_for_half}</td><td class="n">${x.contracts_n!=null?x.contracts_n.toLocaleString('en-GB'):'–'}</td><td class="n">${pc(x.share_direct)}</td><td class="n">${pc(x.sme_share)}</td><td class="n">${pc(x.contractor_share_of_workforce)}</td><td class="n">${x.non_payroll_cost_gbp_m!=null&&x.paybill_gbp_m?pc(x.non_payroll_cost_gbp_m/x.paybill_gbp_m):'–'}</td></tr>`).join('')}</table></div>
+   <p class="sub">"Direct awards" means contracts awarded with no competition (as the notice describes the procedure; the wording varies, so this is approximate). "Small and medium firms" is the share of contract awards whose winner is flagged as an SME in the notice. "Contractors in workforce" counts people not on the payroll (agency, interim and contingent labour) as a share of everyone in the department's monthly workforce return; "Contractor cost vs payroll" compares what those people cost with the payroll cost for the same month. Returns are management information and cover each department's arm's-length bodies; Home Office, Justice (costs), Cabinet Office and Law Officers are missing or incomplete.</p>
+   <h3>What government buys from suppliers, by kind of service</h3>
+   ${bars(cs.by_service.filter(x=>x.service_class!=='Other or not described'&&x.value_gbp_m>=50).map(x=>({label:x.service_class,value:x.value_gbp_m})))}
+   <p class="sub">${esc(SVC_NOTE)} The class "Other or not described" (${fmt((cs.by_service.find(x=>x.service_class==='Other or not described')||{value_gbp_m:0}).value_gbp_m)}) is left out of the chart.</p>
+   <h3>Consultancy, professional services, legal and contingent labour, by department</h3>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Department</th><th class="n">Consultancy</th><th class="n">Other professional</th><th class="n">Legal</th><th class="n">Contingent labour</th><th class="n">Total</th><th class="n">Share of supplier payments</th><th class="n">Consultancy and contingent labour vs a year of payroll</th></tr>
+   ${cs.departments.map(x=>`<tr><td>${link(x.pesa_name)?`<a data-href="${esc(link(x.pesa_name))}">${esc(x.pesa_name)}</a>`:esc(x.pesa_name)}</td><td class="n">${fmt(x.consultancy_gbp_m)}</td><td class="n">${fmt(x.other_professional_gbp_m)}</td><td class="n">${fmt(x.legal_gbp_m)}</td><td class="n">${fmt(x.contingent_gbp_m)}</td><td class="n"><b>${fmt(x.professional_total_gbp_m)}</b></td><td class="n">${pc(x.share_of_supplier_payments)}</td><td class="n">${x.consultancy_and_contingent_vs_payroll!=null?pc(x.consultancy_and_contingent_vs_payroll):'–'}</td></tr>`).join('')}</table></div>
+   <p class="sub">Each department itemises these differently, so the split follows its own ledger labels (open a department to see them): some separate advisory from non-advisory professional services, some record contractors and agency staff, some lump everything together. The Foreign Office books much of its aid-delivery work (including payments to UN agencies) as consultancy and project management, and HMRC records IT contractors supplied through its large technology suppliers as contingent labour, so neither is "consultants" in the everyday sense. The last column compares consultancy plus contingent labour with a year of payroll (the monthly payroll cost in the workforce return times twelve); it is a rough scale, not a precise ratio, and is blank where there is no return or no payroll cost.</p>
+   <h3>Businesses supplying these services to several departments</h3>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Business</th><th class="n">Departments</th><th class="n">Total</th><th class="n">Consultancy</th><th class="n">Contingent labour</th><th class="n">Other professional</th></tr>
+   ${cs.suppliers.slice(0,15).map(x=>`<tr><td>${x.company_no||x.key.length>1?`<a data-href="#suppliers/${esc(x.company_no||x.key)}">${esc(x.supplier)}</a>`:esc(x.supplier)}</td><td class="n">${x.n_departments}</td><td class="n"><b>${fmt(x.value_gbp_m)}</b></td><td class="n">${fmt(x.consultancy_gbp_m)}</td><td class="n">${fmt(x.contingent_gbp_m)}</td><td class="n">${fmt(x.professional_gbp_m)}</td></tr>`).join('')}</table></div>
+   <h3>Businesses that appear across departments</h3>
+   <p><label>Rank by <select id="reachby">${[['departments','number of departments'],['payments','payments received'],['contracts','contract awards (2025-26)'],['grants','grants (2024-25)']].map(([k,l])=>`<option value="${k}"${state.reach.by===k?' selected':''}>${l}</option>`).join('')}</select></label></p>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Business</th><th>Mainly supplies</th><th class="n">Departments</th><th class="n">Payments</th><th class="n">Contracts (equal share)</th><th class="n">Grants</th><th>Largest departments</th></tr>
+   ${rc.businesses.map(b=>`<tr><td>${b.company_no||b.key.length>1?`<a data-href="#suppliers/${esc(b.company_no||b.key)}">${esc(b.business)}</a>`:esc(b.business)}${b.family?`<div class="it">brand: ${esc(b.family)}</div>`:''}</td><td class="it">${esc(b.main_service||'')}</td><td class="n">${b.n_departments}</td><td class="n">${b.payments_gbp_m!=null?fmt(b.payments_gbp_m):'–'}</td><td class="n">${b.contracts_gbp_m!=null?fmt(b.contracts_gbp_m):'–'}</td><td class="n">${b.grants_gbp_m!=null?fmt(b.grants_gbp_m):'–'}</td><td class="it">${b.departments.slice(0,4).map(x=>esc(x.pesa_name)+' '+fmt((x.payments||0)+(x.grants||0)+(x.contracts||0))).join(' · ')}</td></tr>`).join('')}</table></div>
+   <p class="sub">Payments are cash (latest year per department); contract awards are whole-life values split equally where several suppliers share an award (so a framework ceiling is not counted in full for each); grants are 2024-25 awards to companies and charities. The three are different measures from different years and are shown side by side, never added.</p>
+   <h3>Big brands across departments (grouped by name, not verified ownership)</h3>
+   <div style="overflow-x:auto"><table class="tx"><tr><th>Brand</th><th class="n">Departments</th><th class="n">Company records</th><th class="n">Payments</th><th class="n">Contracts (equal share)</th></tr>
+   ${rc.families.map(f=>`<tr><td>${esc(f.family)}</td><td class="n">${f.n_departments}</td><td class="n">${f.entities}</td><td class="n">${f.payments_gbp_m!=null?fmt(f.payments_gbp_m):'–'}</td><td class="n">${f.contracts_gbp_m!=null?fmt(f.contracts_gbp_m):'–'}</td></tr>`).join('')}</table></div>
+   <p class="sub">Brands are matched on the name with a short hand-made list (for example every company with "Kier" or "Serco" in its name). This is a convenience and is not a check of who owns whom. ${rc.joint_ventures_payments_gbp_m?`Joint ventures (${fmt(rc.joint_ventures_payments_gbp_m)} of payments, mostly rail and road construction) are not attributed to any partner so as not to count them twice.`:''}</p>
+   <h3>How contracts were awarded across government (2025-26 awards, by number)</h3>${bars([['Framework or purchasing-system call-offs',rc.contract_mix.framework],['Open or restricted competition',rc.contract_mix.competed],['Direct award or no competition',rc.contract_mix.direct],['Other or not stated',rc.contract_mix.other]].map(([l,v])=>({label:l,sub:pc1(v)+' of '+Math.round(rc.contract_mix.n).toLocaleString('en-GB')+' awards',value:v*100,text:pc1(v)})))}
+   <p class="sub">A call-off from a framework is itself usually competed or allocated under rules set when the framework was let, so it is not the same as a direct award; the notices do not always say which.</p>`;
+  $('#view').querySelector('#reachby')?.addEventListener('change',e=>{state.reach.by=e.target.value;render()});
+  $('#note').innerHTML=srcBox([['spend_dft','payment files (all departments loaded)'],['contracts_finder','award notices'],['grants_register','grants register'],['workforce_mi','monthly workforce returns'],['companies_house','business identity']],['REL-01','REL-02','REL-03','REL-04','REL-05','SVC-01','SVC-02','SVC-03'])}
+function wireSpend(v){
+  v.querySelector('#intra')?.addEventListener('change',e=>{state.sp.intra=e.target.checked;render()});
+  v.querySelectorAll('[data-clear]').forEach(a=>a.onclick=()=>{state.sp[a.dataset.clear]=null;render()});
+  v.querySelectorAll('[data-click^="cat:"],[data-click^="sup:"],[data-click^="area:"]').forEach(r=>{const k=r.dataset.click,go=()=>{const m=k.split(':',1)[0];state.sp[m==='cat'?'cat':m==='area'?'area':'sup']=k.slice(m.length+1);render()};r.onclick=go;r.onkeydown=e=>{if(e.key==='Enter')go()}})}
+async function followView(o){
+  const f=await api('follow/nhs-england'),pt=f.parent_total_m,fund=(f.accounts.find(a=>/Funding to group bodies/.test(a.line))||{parent:0}).parent;
+  const trusts=f.accounts.filter(a=>/foundation trusts|other NHS trusts/.test(a.line)).reduce((a,x)=>a+x.parent,0);
+  const edu=(f.accounts.find(a=>/Multi-Professional/.test(a.line))||{parent:0}).parent;
+  const ap=f.ap_payments.find(x=>x.fy==='2024-25'),ap26=f.ap_payments.find(x=>x.fy==='2025-26');
+  const names={'Funding to group bodies':'Funding drawn down by integrated care boards (ICBs)','Services from foundation trusts':'Services bought from NHS foundation trusts','Services from other NHS trusts':'Services bought from other NHS trusts','Multi-Professional Education and Training Investment Plan Expenditure':'Training the NHS workforce (education and training plan)'};
+  const nm=l=>names[l]||l;
+  return `<h2>NHS England: where the money goes next</h2>
+   <p class="lede">The Department of Health and Social Care paid <b>NHS England</b> ${fmt(f.dhsc_paid_to_nhs_england_2025_26_m)} in 2025-26. This page follows that money one step further, using NHS England's own annual accounts (${f.accounts_year}) and its own published payment files.</p>
+   ${related([{t:'Back to the Department of Health and Social Care',h:'#remit/Health%20%26%20care/Health%20and%20Social%20Care'},{t:'Per person by region',h:'#places'}])}
+   <div class="kpi"><div><b>${fmt(pt)}</b><span>spent by NHS England in ${f.accounts_year} on goods and services (its own accounts)</span></div>
+    <div><b>${fmt(fund)}</b><span>(${(100*fund/pt).toFixed(0)}%) is <b>funding drawn down by integrated care boards</b>: a transfer to the local bodies that commission care, not a payment to a supplier</span></div>
+    <div><b>${fmt(trusts)}</b><span>bought directly from NHS trusts (mostly specialised services)</span></div>
+    ${ap?`<div><b>${fmt(ap.value_m)}</b><span>appears in NHS England's payment files for ${ap.fy} (${(100*ap.value_m/pt).toFixed(0)}% of its spending)</span></div>`:''}</div>
+   <h3>What NHS England itself spends it on (${f.accounts_year} accounts)</h3>
+   ${bars(f.accounts.filter(a=>a.parent>=100).map(a=>({label:nm(a.line),value:a.parent,off:/Funding to group bodies/.test(a.line)})),{csv:'nhs-england-spending-by-line-2024-25'})}
+   <p class="sub">Grey is not a supplier payment. The first line is the money passed to ICBs; the files below list the rest.</p>
+   <h3>Where the ICBs and NHS England together send it (consolidated, ${f.accounts_year}: ${fmt(f.group_total_m)})</h3>
+   ${bars(f.accounts.filter(a=>a.grp>=1000).sort((x,y)=>y.grp-x.grp).map(a=>({label:nm(a.line),value:a.grp})),{csv:'nhs-england-group-spending-by-line-2024-25'})}
+   <p class="sub">Read this as who provides care: foundation trusts, other NHS trusts, private and voluntary providers, GPs, medicines, dentists and pharmacies. These are accounting categories, not individual payments, and they cover 2024-25 (2025-26 accounts are not yet published).</p>
+   <div class="note">The payment files show NHS England's own payments over £25,000 (FY ${ap?ap.fy:'2024-25'} in full and ${ap26?ap26.months+' months of '+ap26.fy:''}; the files stop at September 2025). They are only a small part of the ${fmt(pt)}, because most of the money leaves as transfers to ICBs rather than through its accounts-payable system. We have not confirmed that explanation with NHS England.</div>
+   ${await spendPanel('NHS England',o)}
+   ${srcBox([['nhse_accounts','Note 4 Operating expenses, page 149 (transcribed by hand; the lines add up to the published totals)'],['spend_nhse','payments over £25,000, April 2024 to September 2025'],['spend_dhsc','what DHSC paid NHS England']],['NHSE-01','NHSE-02','DHSC-01'],'Sources and caveats for NHS England')}`}
+async function spendPanel(dept,o){
+  const info=state.spendInfo[dept]||{};const want=['2025-26','2026-27'].includes(o.year)?o.year:'2025-26';let fy=want;if(info.fys&&!info.fys.includes(fy))fy=info.latest_fy||fy;const sp=state.sp;
+  const q={dept,fy,exclude_intra:sp.intra};if(sp.cat)q.category=sp.cat;if(sp.sup)q.supplier=sp.sup;if(sp.area)q.area=sp.area;
+  const r=await fetch('/api/spend?'+new URLSearchParams(q));if(!r.ok)return '';
+  const d=await r.json(),rec=d.reconciliation,gm=v=>fmt(v);
+  const net=sp.intra?d.gross_gbp_m-d.intra_group_gbp_m:d.gross_gbp_m;
+  const shown=d.categories.reduce((a,c)=>a+c.value,0);
+  return `<h2>Who was actually paid: payments over £25,000 (${fy})</h2>
+   ${fy!==want?`<div class="note"><b>Latest published data is for ${fy}.</b> This department's files for ${want} are not published (the last file covers ${rec.last}), so the figures below are for ${fy} and are compared with its ${fy} budget.</div>`:''}
+   <div class="kpi"><div><b>${gm(shown)}</b><span>${sp.cat||sp.sup?'in this selection':'paid out in '+rec.months_covered+' month(s), '+rec.first+' to '+rec.last}</span></div>
+     <div><b>${d.n.toLocaleString('en-GB')}</b><span>${d.line_level?'invoice lines, in '+d.n_payment_ids.toLocaleString('en-GB')+' payments':'payments in the files'}</span></div>
+     ${rec.total_managed_expenditure_gbp_m&&rec.months_covered>=9&&!sp.cat&&!sp.sup?`<div><b>${((shown-d.non_spending_gbp_m)/rec.total_managed_expenditure_gbp_m*100).toFixed(0)}%</b><span>of ${d.budget_label?'what it '+d.budget_label+' (':(d.covers_groups.length>1?'the whole department\'s Total Managed Expenditure (both groups, ':'the department\'s Total Managed Expenditure (')}${gm(rec.total_managed_expenditure_gbp_m)})${rec.months_covered<12?', for the '+rec.months_covered+' months published':''}${d.non_spending_gbp_m>0.5?`, after setting aside ${gm(d.non_spending_gbp_m)} that is money coming in or accounting entries`:''}; see note${shown/rec.total_managed_expenditure_gbp_m<0.5?'. <b>Most of this department\'s spending is not visible in these files</b>':''}</span></div>`:''}</div>
+   ${d.intra_group_gbp_m<0.5?"":`<div class="ctl"><label><input type="checkbox" id="intra" ${sp.intra?'checked':''}> Hide payments to bodies inside the same department group (${gm(d.intra_group_gbp_m)}), which those bodies then spend again and would be counted twice</label></div>`}
+   ${sp.cat||sp.sup||sp.area?`<div>${sp.area?`<span class="chip">${esc(sp.area)} <a data-clear="area">clear</a></span>`:''}${sp.cat?`<span class="chip">${esc(sp.cat)} <a data-clear="cat">clear</a></span>`:''}${sp.sup?`<span class="chip">${esc(sp.sup)} <a data-clear="sup">clear</a></span>`:''}</div>`:''}
+   <div class="note">Cash payments over £25,000, gross of any income, taken straight from the department's published files. They will not match accounts exactly: accounts use accruals, net of income, and strip out transfers inside the group. A payment to another public body, a local authority or a prime contractor shows who got the money first, not what it was finally spent on. Figures here are cash terms, not adjusted for inflation.${d.line_level?` This department publishes every invoice line of each payment whose total exceeds £25,000, so most lines are individually small (${(d.below_threshold_share*100).toFixed(0)}% under £25,000) and ${d.credit_rows.toLocaleString('en-GB')} are credits or refunds.`:d.below_threshold_share>0.02?` Unlike some departments, this one's files also contain ${(d.below_threshold_share*100).toFixed(0)}% of lines under £25,000 and ${d.credit_rows.toLocaleString('en-GB')} credit/refund lines, so the total is closer to a net figure but is still not complete.`:''}${d.possible_duplicate_rows?` ${d.possible_duplicate_rows} payments (${gm(d.possible_duplicates_gbp_m)}) appear twice with identical details; they may be genuine, so they are kept.`:''}</div>
+   ${(!sp.cat&&!sp.sup&&d.suppliers.length&&d.suppliers[0].value/shown>0.5)?`<div class="note" style="border-color:var(--bar)"><b>One recipient dominates.</b> ${(100*d.suppliers[0].value/shown).toFixed(0)}% of the money in these files (${gm(d.suppliers[0].value)}) goes to <b>${esc(d.suppliers[0].example_name)}</b>. That body spends it onward, so what it is spent on is <b>not</b> shown on this page.${/NHS ENGLAND/i.test(d.suppliers[0].example_name)?` <a data-href="#remit/Health%20%26%20care/NHS%20England"><b>Follow it into NHS England's own accounts and payments →</b></a>`:' Follow it to that body\'s own spending.'}</div>`:''}
+   ${d.areas.filter(a=>a.expense_area).length>1?`<h3>Which part of the department paid (cost centre or unit, as named in its files; click to see who it paid)</h3>${bars(d.areas.filter(a=>a.expense_area).map(a=>({label:a.expense_area,sub:a.n.toLocaleString('en-GB')+' payments to '+a.suppliers.toLocaleString('en-GB')+' suppliers',value:a.value,key:'area:'+a.expense_area})),{csv:'payments-by-unit-'+dept.toLowerCase().replace(/\W+/g,'-')})}<p class="sub">Units are the department's own labels. They are usually parts of the organisation (a directorate or an agency), sometimes a named programme or project, and they are not comparable between departments.</p>`:''}
+   <h3>What kind of spending</h3>${bars(d.categories.map(c=>({label:c.category,value:c.value,key:'cat:'+c.category})),{csv:'payments-by-category-'+dept.toLowerCase().replace(/\W+/g,'-')})}
+   ${d.areas.some(a=>a.expense_area)?`<h3>Which part of the department spent it</h3>${bars(d.areas.filter(a=>a.expense_area).map(a=>({label:a.expense_area,value:a.value})))}`:''}
+   ${sp.sup?await companyCard(sp.sup,fy):''}<h3>Biggest recipients</h3>${bars(d.suppliers.map(x=>({label:x.example_name,sub:x.main_category+(x.name_variants>1?` · ${x.name_variants} spellings merged`:''),value:x.value,key:'sup:'+x.supplier_norm})),{csv:'recipients-'+dept.toLowerCase().replace(/\W+/g,'-')})}
+   ${lineChart(d.months.map(m=>({fiscal_year:m.month,basis:'outturn',value:m.value})),'Payments by month (£ million, cash)')}
+   <h3>Largest individual payments</h3><table class="tx"><tr><th>Date</th><th>Paid to</th><th>For</th><th class="n">£ million</th></tr>${d.largest.map(t=>`<tr><td>${t.txn_date}</td><td>${esc(t.supplier)}<div class="it">${esc(t.entity)}</div></td><td>${esc(t.expense_type)}<div class="it">${esc(t.item_text&&t.item_text!=='#'?t.item_text:'')} ${esc(t.expense_area)}</div></td><td class="n">${t.amount_gbp_m.toLocaleString('en-GB',{maximumFractionDigits:2})}</td></tr>`).join('')}</table>`+await contractsPanel(dept,fy,sp.sup)}
+
+const LINK={linked:'Linked to Companies House',ambiguous_name:'Several companies share this name, so no link was made',looks_like_public_body_or_non_company:'Looks like a public body or non-company, so not looked up',no_match:'No Companies House match found'};
+async function companyCard(key,fy){
+  const r=await fetch('/api/supplier?'+new URLSearchParams({key,fy}));if(!r.ok)return '';const d=await r.json(),c=d.company;
+  return `<div class="note" style="border-color:var(--bar)"><b>${esc(c.company_name||c.example_name)}</b>
+   ${c.company_number?` · <a href="${d.companies_house_url}" target="_blank" rel="noopener">Companies House ${esc(c.company_number)}</a>`:''}
+   <div class="meta" style="margin-top:4px">${esc(LINK[c.link_status]||c.link_status)}${c.confidence?` (${c.confidence} confidence, matched by ${esc((c.basis||'').replace(/_/g,' '))})`:''}</div>
+   ${c.company_number?`<div class="meta">Status: ${esc(c.status)} · Type: ${esc(c.category||'')} · Incorporated: ${esc(c.incorporated||'')} · Accounts: ${esc(c.accounts_category||'n/a')}${c.sic_text?' · Activity: '+esc(c.sic_text):''}</div>`:''}
+   ${d.flags.length?`<div style="margin-top:6px"><b>Worth knowing</b> (context, not a finding of any wrongdoing):<ul>${d.flags.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>`:''}
+   ${await (async()=>{try{const rr=await fetch('/api/risk/supplier?key='+encodeURIComponent(c.company_number||''));if(!rr.ok)return '';const rd=await rr.json();return rd.flags.length?`<div style="margin-top:6px"><b>Analyst view (unvalidated)</b>: ${rd.flags.map(f=>esc(f.name)+' (shared by '+(f.register_rate==null?'n/a':(100*f.register_rate).toFixed(1)+'%')+' of companies)').join('; ')}</div>`:''}catch(e){return ''}})()}
+   <div class="meta">${d.fy}: ${fmt(d.total_gbp_m)} paid across ${d.payments.length>1?'several budget lines':'one budget line'}; shown under ${d.spellings.length} spelling(s): ${d.spellings.map(x=>esc(x.supplier)).slice(0,4).join('; ')}${d.spellings.length>4?'…':''}</div>
+   ${d.services&&(d.services.payments.length||d.services.contracts.length)?`<h3 style="margin-top:10px">What it supplies (kind of service, worked out from the payment and contract descriptions)</h3>
+    ${d.services.payments.length?`<div class="meta">Payments (cash, over £25,000, across departments):</div>${bars(d.services.payments.slice(0,6).map(x=>({label:x.service_class,value:x.value_gbp_m})))}`:''}
+    ${d.services.contracts.length?`<div class="meta">Contract awards in 2025-26 (whole-life value, equal share where shared):</div>${bars(d.services.contracts.slice(0,6).map(x=>({label:x.service_class,value:x.value_gbp_m})))}`:''}`:''}
+   ${d.reach&&d.reach.n_departments>1?`<h3 style="margin-top:10px">Across government: ${d.reach.n_departments} departments deal with this business</h3>
+    <div class="meta">Payments are cash in each department's latest year; contract awards are 2025-26 whole-life values (equal share where shared); grants are 2024-25. Shown side by side, not added.</div>
+    <table class="tx"><tr><th>Department</th><th class="n">Payments</th><th class="n">Contracts</th><th class="n">Grants</th></tr>${d.reach.departments.map(x=>`<tr><td>${DEPT_GROUP[x.pesa_name]?`<a data-href="#remit/${esc(DEPT_GROUP[x.pesa_name])}/${esc(x.pesa_name)}">${esc(x.pesa_name)}</a>`:esc(x.pesa_name)}</td><td class="n">${x.payments!=null?fmt(x.payments):'–'}</td><td class="n">${x.contracts!=null?fmt(x.contracts):'–'}</td><td class="n">${x.grants!=null?fmt(x.grants):'–'}</td></tr>`).join('')}</table>`:''}
+   ${d.grants?`<h3 style="margin-top:10px">Grants received (government grants register, 2024-25)</h3>
+    <div class="meta">${d.grants.n} award${d.grants.n===1?'':'s'} totalling ${fmt(d.grants.total_gbp_m)}. Grants are paid under schemes and are separate from payments for goods and services and from contracts.</div>
+    ${bars(d.grants.by_funder.map(f=>({label:f.funder,sub:f.n+' award'+(f.n===1?'':'s'),value:f.value,href:DEPT_GROUP[f.pesa_name]?'#remit/'+DEPT_GROUP[f.pesa_name]+'/'+f.pesa_name:null})))}
+    <table class="tx"><tr><th>Awarded</th><th>Award</th><th class="n">£ million</th></tr>${d.grants.largest.slice(0,5).map(g=>`<tr><td>${g.date||''}</td><td>${esc(g.title)}<div class="it">${esc(g.scheme||'')} · ${esc(g.funder)}</div></td><td class="n">${g.value.toLocaleString('en-GB',{maximumFractionDigits:2})}</td></tr>`).join('')}</table>`:''}
+   ${d.contracts&&d.contracts.n?`<h3 style="margin-top:10px">Contracts held (awards published since 2025)</h3>
+    <div class="meta">${d.contracts.n} award(s) with a combined whole-life value of ${fmt(d.contracts.lifetime_value_gbp_m)}; ${d.contracts.live_n} still running (end date in the future) worth ${fmt(d.contracts.live_value_gbp_m)}. Compare with payments: ${d.contracts.paid_by_fy.map(x=>x.fy+' '+fmt(x.value)).join(', ')||'none over £25,000'}. Contract value is not annual spending, and some awards are framework ceilings shared with other suppliers.</div>
+    ${bars(d.contracts.by_department.map(x=>({label:x.pesa_name||'Other public bodies',sub:x.n+' award(s)'+(x.latest_end?', latest ends '+x.latest_end:''),value:x.value})))}
+    <table class="tx"><tr><th>Awarded</th><th>Contract</th><th>Ends</th><th class="n">£ million</th></tr>${d.contracts.largest.slice(0,6).map(t=>`<tr><td>${t.award_date||''}</td><td>${t.notice_url?`<a href="${t.notice_url}" target="_blank" rel="noopener">${esc(t.title||'(untitled)')}</a>`:esc(t.title||'')}<div class="it">${esc(t.buyer_name||'')}</div></td><td>${t.contract_end||''}</td><td class="n">${t.value_gbp_m.toLocaleString('en-GB',{maximumFractionDigits:1})}</td></tr>`).join('')}</table>`:''}
+   ${bars(d.payments.map(p=>({label:p.pesa_name+' · '+p.category,value:p.value,href:DEPT_GROUP[p.pesa_name]?'#remit/'+DEPT_GROUP[p.pesa_name]+'/'+p.pesa_name:null})))}</div>`}
+const gbp=v=>'£'+Math.round(v).toLocaleString('en-GB');
+async function placesView(o){
+  const yrs=await api('regions',{}),year=yrs.years.includes(o.year)?o.year:yrs.years[yrs.years.length-1];
+  const d=await api('regions',{year}),sel=state.path[0];
+  $('#hero').innerHTML=`${gbp(d.uk_per_head)}<small>identifiable public spending per person, UK average, ${year} (cash terms; population mid-${d.population_year})</small>`;
+  if(!sel){
+    $('#view').innerHTML=bars(d.regions.map(r=>({label:r.region,sub:`${fmt(r.spend_m)} for ${(r.population/1e6).toFixed(1)}m people`+(r.deprivation_score!=null?` · deprivation score ${r.deprivation_score.toFixed(1)} (higher = more deprived)`:''),value:r.per_head,text:gbp(r.per_head)+' each',key:r.region})),{csv:'per-person-spending-by-region',unit:'GBP per person'});
+    $('#note').innerHTML=`<div class="note">Per-head figures divide the Treasury's <b>identifiable</b> spending by population. They are <b>not</b> adjusted for need (age, health, deprivation, rurality), so a higher figure does not mean unfair treatment. Spending is attributed to a region by the Treasury's rules, which is not always where the money is spent. Identifiable spending is about ${(100*0.74).toFixed(0)}% of the total: defence, debt interest and overseas spending are not allocated to places. Deprivation scores exist only for England (Scotland, Wales and Northern Ireland use different indices). Cash terms, not adjusted for inflation. CRA years available: ${d.years[0]} to ${d.years[d.years.length-1]}.</div>`;
+  }else{
+    const r=await api('region',{name:sel,year}),a=r.age,pc=v=>(100*v/a.total).toFixed(0)+'%';
+    $('#view').innerHTML=`<h2>${esc(sel)}</h2>
+     <div class="kpi"><div><b>${(r.population/1e6).toFixed(2)}m</b><span>people (mid-${d.population_year})</span></div>${a?`<div><b>${pc(a.under16)}</b><span>aged under 16 (mid-2025)</span></div><div><b>${pc(a.over64)}</b><span>aged 65 and over (mid-2025)</span></div>`:''}</div>
+     ${r.summary&&(r.summary.disabled_share!=null||r.summary.uc_health_per_1000_working_age!=null)?`<div class="kpi">${r.summary.disabled_share!=null?`<div><b>${(100*r.summary.disabled_share).toFixed(1)}%</b><span>of residents disabled under the Equality Act (Census 2021)</span></div>`:''}${r.summary.uc_health_per_1000_working_age!=null?`<div><b>${r.summary.uc_health_per_1000_working_age.toFixed(0)}</b><span>Universal Credit claimants with a health condition per 1,000 people aged 16 to 64 (June 2026)</span></div>`:''}</div>`:''}
+     <h3>Spending per person, by purpose (region vs UK average)</h3>${bars(r.functions.sort((x,y)=>y.per_head-x.per_head).map(f=>({label:f.function,sub:`UK average ${gbp(f.uk_per_head)}: ${f.per_head>=f.uk_per_head?'+':''}${(100*(f.per_head/f.uk_per_head-1)).toFixed(0)}%`,value:f.per_head,text:gbp(f.per_head),href:'#purpose/'+(PURPOSE_KEY[f.function]||'')})),{csv:'per-person-spending-'+sel.toLowerCase().replace(/\W+/g,'-'),unit:'GBP per person'})}
+     ${r.local_authorities.length?`<h3>Local authorities in this region</h3><div style="overflow-x:auto"><table class="tx"><tr><th>Area</th><th class="n">Population</th><th class="n">Disabled (Census 2021)</th><th class="n">UC health claimants per 1,000 aged 16-64</th><th class="n">Share of UC claimants with a health condition</th><th class="n">Deprivation rank (1 = most deprived of 296)</th></tr>${r.local_authorities.map(l=>`<tr><td>${esc(l.name)}</td><td class="n">${l.pop.toLocaleString('en-GB')}</td><td class="n">${l.disabled_share!=null?(100*l.disabled_share).toFixed(1)+'%':''}</td><td class="n">${l.uc_health_per_1000!=null?l.uc_health_per_1000.toFixed(0):''}</td><td class="n">${l.uc_health_share_of_uc!=null?(100*l.uc_health_share_of_uc).toFixed(0)+'%':''}</td><td class="n">${l.rank_of_avg_score??''}</td></tr>`).join('')}</table></div>`:''}`;
+    $('#note').innerHTML=`<div class="note">Spending by purpose is the Treasury's Country and Regional Analysis for ${year}. Local authority spending itself is not yet loaded; this table shows who lives there, how many are disabled (Census 2021, England and Wales only), how many Universal Credit claimants have a health condition (DWP, Great Britain, June 2026) and how deprived the area is (England only). These are different measures from different dates, and entitlement to benefits is not the same as self-reported disability. Spending per disabled resident is deliberately not shown: social protection is mostly pensions and benefits not aimed at disabled people.</div>`;
+  }
+}
+async function suppliersView(o){
+  const fy=['2025-26','2026-27'].includes(o.year)?o.year:'2025-26',d=await (await fetch('/api/suppliers/top?'+new URLSearchParams({fy,limit:30}))).json();
+  $('#hero').innerHTML=`${fmt(d.total_gbp_m)}<small>Paid out in ${fy} across the departments loaded so far (payments over £25,000, group-internal payments removed)</small>`;
+  const sel=state.path[0];
+  const cov=d.linkage.map(l=>`${(l.share*100).toFixed(0)}% ${esc(LINK[l.status]||l.status).toLowerCase()}`).join(' · ');
+  $('#view').innerHTML=(sel?await companyCard(sel,fy):'')+related([{t:'Departments',h:'#remit'},{t:'What is and is not covered',h:'/coverage'}])+bars(d.suppliers.map(x=>({label:x.name,sub:(x.depts||[]).join(' + ')+(x.spellings>1?` · ${x.spellings} spellings merged`:'')+(x.company_number?'':' · not matched to a company'),value:x.value,key:x.k})),{csv:'biggest-recipients-'+fy});
+  $('#note').innerHTML=`<div class="note">Recipients are merged across departments and spelling variants and linked to the Companies House register by name (and postcode where published). Coverage of the money: ${cov}. Links are only made when unambiguous. Only the departments loaded so far are included, so this is not "the whole of government".</div>`;
+}
+const TABNAME={story:'The story',people:'Workforce',areas:'Local Gov',questions:'Questions',data:'Data',glossary:'Glossary'};
+function crumbs(){const c=$('#crumbs');
+  if(state.tab==='story'&&!state.crumbs){c.innerHTML='';return}
+  let items=state.crumbs;
+  if(!items){items=[{t:TABNAME[state.tab],h:'#'+state.tab}];state.path.forEach((p,i)=>{let t=p;try{t=decodeURIComponent(p)}catch(e){}items.push({t,h:'#'+state.tab+'/'+state.path.slice(0,i+1).map(encodeURIComponent).join('/')})})}
+  items=[{t:'Home',h:'#'},...items];
+  c.innerHTML='<div class="cin">'+items.map((p,i)=>i<items.length-1?`<a href="${esc(p.h)}">${esc(p.t)}</a>`:`<b>${esc(p.t)}</b>`).join('<span class="sep">\u203a</span>')+'<button class="dl copy" id="copylink" title="Copy a link to this exact view">Copy link</button></div>';
+  const cl=$('#copylink');if(cl)cl.onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(location.href);cl.textContent='Copied'}}
+const setActive=()=>{document.querySelectorAll('#tabs button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.tab===state.tab));if(window.setNavLabel)setNavLabel(TABNAME[state.tab]||state.tab)};
+
+
+const DEPT_SRC={'Transport':['spend_dft'],'Home Office':['spend_ho'],'Work and Pensions':['spend_dwp','dwp_ara','dwp_benefit_tables'],'Health and Social Care':['spend_dhsc'],'Education':['spend_dfe'],'Defence':['spend_mod'],'Energy Security and Net Zero':['spend_desnz'],'MHCLG - Local Government':['spend_mhclg'],'MHCLG - Housing and Communities':['spend_mhclg'],'HM Revenue and Customs':['spend_hmrc'],'HM Treasury':['spend_hmt'],'NHS England':['spend_nhse'],'Foreign, Commonwealth and Development Office':['spend_fcdo'],'Business and Trade':['spend_dbt'],'Justice':['spend_moj'],'Environment, Food and Rural Affairs':['spend_defra'],'Science, Innovation and Technology':['spend_dsit']};
+const DEPT_ISSUES={'Science, Innovation and Technology':['DSIT-01','DSIT-02'],'Environment, Food and Rural Affairs':['DEFRA-01','DEFRA-02'],'Justice':['JUS-01','JUS-02','JUS-03'],'Transport':['DFT-04','DFT-05','DFT-09','DFT-10','DFT-11'],'Home Office':['HO-01','HO-04','HO-05','HO-06','HO-08'],'Work and Pensions':['DWP-01','DWP-04','DWP-05','DWP-06','DWP-07'],'Health and Social Care':['DHSC-01','DHSC-02','DHSC-03'],'Education':['DFE-01','DFE-02','DFE-03'],'Defence':['MOD-01','MOD-02','MOD-03'],'Energy Security and Net Zero':['DESNZ-01','DESNZ-02'],'MHCLG - Local Government':['MHCLG-01','MHCLG-02'],'MHCLG - Housing and Communities':['MHCLG-01','MHCLG-02'],'HM Revenue and Customs':['HMRC-01'],'HM Treasury':['HMT-01'],'NHS England':['NHSE-01','NHSE-02'],'Foreign, Commonwealth and Development Office':['FCDO-01','FCDO-02'],'Business and Trade':['DBT-01','DBT-02']};
+const PURPOSE_KEY={'General public services':'1. General public services','Defence':'2. Defence','Public order and safety':'3. Public order and safety','Economic affairs':'4. Economic affairs','Environment protection':'5. Environment protection','Housing and community amenities':'6. Housing and community amenities','Health':'7. Health','Recreation, culture and religion':'8. Recreation, culture and religion','Education':'9. Education','Social protection':'10. Social protection'};
+// attach sources and caveats to the panels that were written before citations existed
+const _wrap=(fn,refs,issues,title)=>async(...a)=>{const h=await fn(...a);return h?h+srcBox(refs,issues,title):h};
+reconPanel=_wrap(reconPanel,[['dwp_ara','Table 1'],['dwp_benefit_tables','Table 1a'],['spend_dwp','payments over £25,000']],['DWP-05','DWP-01','DWP-09']);
+budgetPanel=_wrap(budgetPanel,[['dwp_ara','Tables 1 and 2 (public spending and administration budget)'],['pesa','Table 1.11, for the check against DWP\'s total']],['DWP-09','DWP-06']);
+ucHealthPanel=_wrap(ucHealthPanel,[['uc_health','Tables 1 and 3']],['CL-02','CL-04']);
+benefitsPanel=_wrap(benefitsPanel,[['dwp_benefit_tables','Tables 1a, 1b, 1c'],['dwp_fraud_error','Tables 1, 2, 6, 7 and 14'],['take_up','Pension Credit and Housing Benefit tables PC1 and HB1']],['DWP-06','DWP-07','DWP-10','CL-05']);
+contractsPanel=_wrap(contractsPanel,[['contracts_finder','award notices since April 2025']],['CF-03','CF-02','CF-04']);
+naoPanel=_wrap(naoPanel,[['nao_reports','report list and summaries'],['pac_reports','committee reports list']],['NAO-01','NAO-02','NAO-03','PAC-01']);
+reliancePanel=_wrap(reliancePanel,[['spend_dft','payment files'],['contracts_finder','award notices'],['workforce_mi','monthly workforce returns']],['REL-01','REL-03','REL-04','REL-05','SVC-01','SVC-02']);
+grantsPanel=_wrap(grantsPanel,[['grants_register','Scheme and award data, 2024-25']],['GRANT-01','GRANT-02','GRANT-03']);
+lossesPanel=_wrap(lossesPanel,[['dept_ara','Losses and special payments note (audited)']],['LOS-01','LOS-02']);
+supplyPanel=_wrap(supplyPanel,[['dept_ara','Statement of Outturn against Parliamentary Supply, summary table']],['SUP-01','SUP-02','SUP-03']);
+staffPanel=_wrap(staffPanel,[['cs_statistics','tables 8, 12, 20, 21, 25, 26, 30, 32, D1 and B'],['workforce_mi','monthly workforce management information']],['CSW-01','CSW-02','CSW-03','CSW-04','CSW-06','CSW-07']);
+wcaPanel=_wrap(wcaPanel,[['uc_health','Tables 4 and 5']],['CL-04','CL-05']);
+restartPanel=_wrap(restartPanel,[['dwp_restart','Tables 2.1 and 4.1 and the contract area annex'],['spend_dwp','payments by cost centre']],['DWP-15']);
+errorsPanel=_wrap(errorsPanel,[['dwp_fraud_error','Tables 1, 3, 6 and 8'],['dwp_unfulfilled','Tables 1 and 3']],['DWP-06','DWP-07','DWP-10','DWP-11','DWP-12']);
+accountsNotesPanel=_wrap(accountsNotesPanel,[['dwp_accounts','Accountability report, pp. 293-303 (hand-transcribed)']],['DWP-13','DWP-14']);
+projectsPanel=_wrap(projectsPanel,[['nista_gmpp','Major Projects Annual Report 2025-26, data file']],['GMPP-01','GMPP-02','GMPP-03','GMPP-04','PRJ-01','PRJ-02']);
+hoReconPanel=_wrap(hoReconPanel,[['ho_accounts','Statement of Comprehensive Net Expenditure, pp. 246-247 (hand-transcribed)'],['spend_ho','payments over £25,000'],['pesa','Table 1.11']],['HO-05','HO-04']);
+const _sp=spendPanel;spendPanel=async(dept,o)=>{const h=await _sp(dept,o);return h?h+srcBox((DEPT_SRC[dept]||[]).map(x=>[x,'monthly payment files']).concat([['companies_house','recipient identity']]),(DEPT_ISSUES[dept]||[]).concat(['CH-02','CH-03']),'Sources and caveats for these payments'):h};
+const _pv=placesView;placesView=async o=>{await _pv(o);$('#note').insertAdjacentHTML('beforeend',srcBox([['pesa','Tables 9.1a, 9.1b and 9.5 to 9.14 (Country and Regional Analysis)'],['ons_population','mid-year estimates 2021 to 2025'],['imd2025','district summaries'],['census_disability','Disability by age'],['uc_health','Table 3 (by area)']],['GEO-01','GEO-02','GEO-03','GEO-04','CL-01','CL-02','CL-03']))};
+const _sv=suppliersView;suppliersView=async o=>{await _sv(o);$('#note').insertAdjacentHTML('beforeend',srcBox([['spend_dft'],['spend_ho'],['spend_dwp'],['spend_dhsc'],['spend_dfe'],['spend_mod'],['companies_house','company register'],['contracts_finder','company numbers stated in notices']],['CH-02','CH-03','CH-04','CH-05','DFT-08','DFT-09','DHSC-03','DFE-02']))};
+
+function fromHash(){const h=decodeURIComponent(location.hash.slice(1));if(!h){state.tab='story';state.path=[];setActive();return}const [t,...p]=h.split('/');if(Object.keys(TABNAME).includes(t)){state.tab=t;state.path=p.filter(Boolean);setActive()}}
+const NOTIN=()=>{const t=decodeURIComponent(location.hash.slice(1)).split('/')[0];if(t&&!Object.keys(TABNAME).includes(t)){$('#hero').innerHTML='Not in this edition';$('#view').innerHTML='<div class="note keep">This part of NewGov (departments, purposes, suppliers and the data browser) is not in the static edition. <a href="#">Back to the story</a>.</div>';$('#crumbs').innerHTML='';return true}return false};
+window.addEventListener('hashchange',()=>{if(NOTIN())return;fromHash();render()});
+let CUR=0;class Stale extends Error{}
+const _fetch=window.fetch.bind(window);
+window.fetch=async(...a)=>{const my=CUR,r=await _fetch(...a);if(my!==CUR&&String(a[0]).startsWith('/api/'))throw new Stale();return r};   // a page that was left before its data arrived must not paint over the page now showing
+async function render(){
+  const my=++CUR;
+  try{await renderInner();if(window.collapsify&&my===CUR)collapsify($('#view'),location.hash.split('/').slice(0,2).join('/'))}catch(e){if(e instanceof Stale||my!==CUR)return;console.error(e);$('#view').innerHTML=`<div class="note">This page could not be loaded: ${esc(e.message||String(e))}</div>`}
+}
+async function renderInner(){
+  {const old=$('#view'),nv=old.cloneNode(false);old.replaceWith(nv)}      // a fresh page area each time: any older render still holding the previous one writes into nothing
+  const nh='#'+[state.tab,...state.path].map(encodeURIComponent).join('/');if(location.hash!==nh&&decodeURIComponent(location.hash)!==decodeURIComponent(nh))history.replaceState(null,'',nh);
+  state.crumbs=null;if(window.hideTips)hideTips();if(window.closePop)closePop();crumbs();const v=$('#view'),o=opts();$('#note').innerHTML='';$('#ctlbar').style.display=(state.tab==='story'||state.tab==='people'||state.tab==='reliance'||state.tab==='questions'||state.tab==='data'||state.tab==='areas'||state.tab==='glossary')?'none':'';
+  if(state.tab==='story'){$('#hero').innerHTML='';v.innerHTML=await storyView();window.scrollTo(0,0);return}
+  if(state.tab==='places'){await placesView(o)}else if(state.tab==='people'){await peopleView(o)}else if(state.tab==='reliance'){await relianceView(o)}else if(state.tab==='questions'){await questionsView()}else if(state.tab==='data'){await dataView()}else if(state.tab==='areas'){await areasView()}else if(state.tab==='glossary'){await glossaryView()}else if(state.tab==='suppliers'){await suppliersView(o)}else if(state.tab==='remit'){
+    const d=await api('remits',o);
+    $('#hero').innerHTML=`${fmt(d.total_managed_expenditure)}<small>Total Managed Expenditure, ${d.year} (${d.basis}${o.real?', 2025-26 prices':', cash terms'})</small>`;
+    if(state.path.length===0){
+      v.innerHTML=related([{t:'Spending by purpose',h:'#purpose'},{t:'Who gets paid',h:'#suppliers'},{t:'Per person by region',h:'#places'}])+bars(d.groups.map(g=>({label:g.remit_group,sub:g.departments.map(x=>x.pesa_name).join(' · '),value:g.value,key:g.remit_group})),{csv:'spending-by-remit-group'});
+      $('#note').innerHTML=`<div class="note">These ${d.groups.length} groups add up to ${fmt(d.sum_of_departments)}. The rest of the headline is debt interest, locally financed spending, depreciation and accounting adjustments that sit outside department budgets.</div>`+srcBox([['pesa','Table 1.11'],['govuk_orgs','department names']],['PESA-05','PESA-06','PESA-07','PESA-13','OWN-01']);
+    }else if(state.path.length===1){
+      const g=d.groups.find(x=>x.remit_group===state.path[0]);
+      let extra=[];if(g.remit_group==='Health & care'){try{const nf=await api('follow/nhs-england');extra=[{label:'NHS England (follow-on body)',sub:'Where the money DHSC pays NHS England goes next: its own accounts and payment files',value:nf.parent_total_m,text:fmt(nf.parent_total_m)+' (2024-25 accounts)',key:'NHS England'}]}catch(e){}}
+      v.innerHTML=bars([...g.departments.map(x=>({label:x.pesa_name,sub:x.cabinet_role,value:x.value,key:x.pesa_name})),...extra],{csv:'departments-'+g.remit_group.replace(/\W+/g,'-').toLowerCase()});
+    }else if(state.path[1]==='NHS England'){v.innerHTML=await followView(o);wireSpend(v)}else{
+      const dep=await api('department',{name:state.path[1],real:o.real});
+      const fs=dep.functions_2025_26;
+      v.innerHTML=`<h2>${esc(dep.department.pesa_name)}</h2><p class="sub">${esc(dep.department.cabinet_role)}${dep.department.govuk_title?` · GOV.UK: ${esc(dep.department.govuk_title)}`:''}</p>`+
+        lineChart(dep.series,`Total managed expenditure, ${o.real?'2025-26 prices':'cash terms'} (£ million)`)+(dep.department.pesa_name==='Energy Security and Net Zero'?`<div class="note"><b>Why this line goes sharply up and then negative.</b> Total managed expenditure includes accounting entries, not only cash. The Treasury's footnote to this series (PESA 2026, Table 1.11, note 1) explains that the swings in 2021-22 to 2023-24 come from changes to the long-term discount rate used to value nuclear decommissioning and other long-term provisions. A change in the discount rate raises or lowers the recorded cost without any money moving, so the negative years are not refunds. Use the "What it was spent on" and payments sections below for cash.</div>`:'')+
+        (fs.length?`<h2>What it was spent on (2025-26, by function)</h2>`+bars(fs.map(f=>({label:f.function.replace(/^\d+\.\s*/,''),value:f.value}))):'');
+      if(dep.department.pesa_name==='Work and Pensions'){v.insertAdjacentHTML('beforeend',await reconPanel()+await budgetPanel()+await ucHealthPanel()+await wcaPanel()+await benefitsPanel(o)+await errorsPanel()+await accountsNotesPanel()+await restartPanel());
+        v.querySelector('#errben')?.addEventListener('change',e=>{state.dwp.errben=e.target.value;render()});
+        v.querySelectorAll('[data-click^="ben:"]').forEach(r=>{const go=()=>{state.dwp.sel=r.dataset.click.slice(4);render()};r.onclick=go;r.onkeydown=e=>{if(e.key==='Enter')go()}});
+        v.querySelectorAll('[data-clear="dwp"]').forEach(a=>a.onclick=()=>{state.dwp.sel=null;render()})}
+      if(dep.department.pesa_name==='Home Office')v.insertAdjacentHTML('beforeend',await hoReconPanel());
+      if(state.spendDepts.includes(dep.department.pesa_name)){v.insertAdjacentHTML('beforeend',await spendPanel(dep.department.pesa_name,o));
+        v.querySelector('#intra')?.addEventListener('change',e=>{state.sp.intra=e.target.checked;render()});
+        v.querySelectorAll('[data-clear]').forEach(a=>a.onclick=()=>{state.sp[a.dataset.clear]=null;render()});
+        v.querySelectorAll('[data-click^="cat:"],[data-click^="sup:"],[data-click^="area:"]').forEach(r=>{const k=r.dataset.click,go=()=>{const m=k.split(':',1)[0];state.sp[m==='cat'?'cat':m==='area'?'area':'sup']=k.slice(m.length+1);render()};r.onclick=go;r.onkeydown=e=>{if(e.key==='Enter')go()}});}
+      const nm=dep.department.pesa_name,DS=DEPT_SRC[nm]||[];
+      v.insertAdjacentHTML('beforeend',await supplyPanel(nm));
+      v.insertAdjacentHTML('beforeend',await reliancePanel(nm));
+      v.insertAdjacentHTML('beforeend',await grantsPanel(nm));
+      v.insertAdjacentHTML('beforeend',await lossesPanel(nm));
+      v.insertAdjacentHTML('beforeend',await staffPanel(nm));
+      v.insertAdjacentHTML('beforeend',await projectsPanel(nm));
+      v.insertAdjacentHTML('beforeend',await naoPanel(nm));
+      const top2=(dep.functions_2025_26||[]).slice(0,2);
+      v.insertAdjacentHTML('afterbegin',related([...top2.map(f=>({t:'Everyone who spends on '+short(f.function).toLowerCase(),h:'#purpose/'+f.function})),{t:'Per person by region',h:'#places'},{t:'Biggest recipients across departments',h:'#suppliers'},{t:'What is and is not covered',h:null}].filter(x=>x.h!==null||false)));
+      const ids=[...v.querySelectorAll('h2')].map(h=>{const t=h.textContent;const id=/Why the payment files/.test(t)?'coverage':/own accounts/.test(t)?'accounts':/Universal Credit claimants/.test(t)?'uchealth':/benefits money/.test(t)?'benefits':/actually paid/.test(t)?'payments':/Contracts awarded/.test(t)?'contracts':/What it was spent on/.test(t)?'purposes':/Audit reports/.test(t)?'audit':/relies on a few/.test(t)?'reliance':/Grants this department/.test(t)?'grants':/Losses and special payments \(accounts/.test(t)?'losses2':/Did it spend/.test(t)?'supply':/Who works here/.test(t)?'staff':/Work Capability Assessment/.test(t)?'wca':/Why the payment files show only/.test(t)?'coverage':/Major projects/.test(t)?'projects':/paid wrongly/.test(t)?'errors':/Losses, special/.test(t)?'losses':null;if(id)h.id=id;return id?[id,t.replace(/\s*\(.*$/,'').replace(/^Why the payment files show so little of DWP's spending$/,'Why payment files show so little').replace(/^Who was actually paid: payments over £25,000$/,'Who was paid').replace(/^Audit reports.*$/,'Audit reports').replace(/^How much it relies.*$/,'Reliance').replace(/^Grants this department.*$/,'Grants').replace(/^Did it spend.*$/,'Voted vs spent').replace(/^Who works here.*$/,'Staff').replace(/^Work Capability Assessment.*$/,'Assessments').replace(/^Why the payment files show only.*$/,'Why payment files show less').replace(/^Major projects.*$/,'Major projects').replace(/^Why benefit money is paid wrongly.*$/,'Errors').replace(/^Losses, special.*$/,'Losses and liabilities').replace(/^Where the benefits money goes$/,'Benefits').replace(/^The department's own accounts$/,'Accounts').replace(/^Universal Credit claimants with a health condition$/,'UC health')]:null}).filter(Boolean);
+      if(ids.length)v.insertAdjacentHTML('afterbegin',`<div class="jump"><span>Jump to:</span>${ids.map(([id,t])=>`<a data-jump="${id}">${esc(t)}</a>`).join('')}</div>`);
+      v.insertAdjacentHTML('beforeend',srcBox([['pesa','Tables 1.11 (department totals, outturn and plans) and 5.1 (purposes, 2025-26)'],['govuk_orgs','department and cabinet role'],...DS.map(x=>[x,'payment files'])],['PESA-05','PESA-06','PESA-07',...(DEPT_ISSUES[nm]||[])],'Sources and caveats for this department'));
+      if(dep.functions_note)$('#note').innerHTML=`<div class="note">${esc(dep.functions_note)}</div>`;
+    }
+  }else if(state.tab==='purpose'){
+    const d=await api('functions',o);const tot=d.functions.reduce((a,f)=>a+f.value,0);
+    $('#hero').innerHTML=`${fmt(tot)}<small>Public sector spending on services, ${d.year} (excludes some accounting items)</small>`;
+    if(!state.path.length){v.innerHTML=related([{t:'How each purpose is delivered',h:'#story'},{t:'Spending by type',h:'#type'},{t:'Per person by region',h:'#places'}])+bars(d.functions.map(f=>({label:short(f.function),value:f.value,key:f.function})),{csv:'spending-by-purpose'})}
+    else{const f=d.functions.find(x=>x.function===state.path[0]);const fd=await api('function_departments',{function:state.path[0],year:'2025-26'});
+      v.innerHTML=`<h2>${esc(short(f.function))}</h2><div class="kpi"><div><b>${fmt(f.value)}</b><span>public sector spending on this purpose, ${d.year}</span></div></div>`+
+        related([{t:'Per person by region',h:'#places'},{t:'How it is delivered',h:'#story'}])+`<h3>What it is spent on</h3>`+bars(f.items.map(i=>({label:i.label.replace(/^\d+\.\d+\s*/,''),value:i.value,off:i.value<0})),{csv:'purpose-'+short(f.function).toLowerCase().replace(/\W+/g,'-')})+
+        `<h3>Which departments spend it (2025-26)</h3>`+bars(fd.departments.map(x=>({label:x.name,value:x.value,href:x.href})),{csv:'departments-for-'+short(f.function).toLowerCase().replace(/\W+/g,'-')})+`<p class="sub">Click a department to see everything it spends.</p>`}
+    $('#note').innerHTML=srcBox([['pesa','Tables 5.1 and 5.2']],['PESA-05','PESA-11','PESA-12']);
+  }else{
+    const d=await api('economic',o);
+    $('#hero').innerHTML=`What government buys, pays and hands out<small>Public sector spending on services by economic category, ${d.year}</small>`;
+    v.innerHTML=related([{t:'Spending by purpose',h:'#purpose'},{t:'The flow, step by step',h:'#story'}])+bars(d.items.map(i=>({label:i.label,sub:i.section.replace('Public sector ','').replace(' on services',''),value:i.value,off:i.value<0})),{csv:'spending-by-type'});
+    $('#note').innerHTML='<div class="note">Grey bars are income or offsetting items (for example fees and charges) that reduce net spending.</div>'+srcBox([['pesa','Table 5.3']],['PESA-04','PESA-06']);
+  }
+  v.querySelectorAll('[data-click]:not([data-click^="cat:"]):not([data-click^="sup:"]):not([data-click^="ben:"])').forEach(r=>{const go=()=>{state.path=['suppliers','places'].includes(state.tab)?[r.dataset.click]:[...state.path,r.dataset.click];render()};r.onclick=go;r.onkeydown=e=>{if(e.key==='Enter')go()}});
+}
+$('#tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;state.tab=b.dataset.tab;state.path=[];setActive();render()};
+$('#year').onchange=$('#real').onchange=()=>{render()};
+document.addEventListener('click',e=>{
+  const h=e.target.closest('[data-href]');if(h&&!e.target.closest('details,summary')){const u=h.dataset.href;if(u.startsWith('#')){location.hash=u;if(u===location.hash&&true)fromHash(),render()}else location.href=u;return}
+  const j=e.target.closest('[data-jump]');if(j){const t=document.getElementById(j.dataset.jump);if(t)t.scrollIntoView({behavior:'smooth',block:'start'});return}
+  const b=e.target.closest('[data-dl]');if(b){const c=CSV[b.dataset.dl];if(!c)return;const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+    const text=['label,note,'+c.unit].concat(c.items.map(i=>[q(i.label),q(i.sub||''),i.value].join(','))).join('\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+text],{type:'text/csv'}));a.download=c.name+'.csv';a.click();return}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'){const h=e.target.closest&&e.target.closest('[data-href]');if(h)h.click()}});
+window.addEventListener('unhandledrejection',e=>{const v=document.getElementById('view');if(v&&!v.innerHTML)v.innerHTML='<div class="note"><b>Cannot load data.</b> '+String(e.reason&&e.reason.message||e.reason)+'</div>'});
+(async()=>{CIT=await (await fetch('/api/citations')).json();try{(await api('notes')).issues.forEach(i=>ISS[i.id]=i)}catch(e){}
+ try{(await api('remits',{year:'2025-26',real:false})).groups.forEach(g=>g.departments.forEach(d=>DEPT_GROUP[d.pesa_name]=g.remit_group))}catch(e){}
+ const m=await api('meta');{const sd=await api('spend/depts');state.spendDepts=sd.map(x=>x.pesa_name);state.spendInfo=Object.fromEntries(sd.map(x=>[x.pesa_name,x]))}$('#year').innerHTML=m.years.filter(y=>+y.fiscal_year.slice(0,4)<=2028).map(y=>`<option value="${y.fiscal_year}" ${y.fiscal_year==='2025-26'?'selected':''}>${y.fiscal_year} (${y.basis})</option>`).join('');
+ if(!NOTIN()){fromHash();render()}})();
+</script>
+</body></html>

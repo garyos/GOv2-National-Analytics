@@ -1,0 +1,10 @@
+/* static edition: the section pills stay in the top bar on every page (no hamburger needed with six sections) */
+.topnav{flex-wrap:nowrap;gap:14px;padding:8px 16px}
+.topnav .burger,.topnav .cur{display:none}
+.topnav .menu{display:flex;flex:1;min-width:0;align-items:center;gap:12px;flex-basis:auto;border:0;margin:0;padding:0}
+.topnav .menu .tabs{display:flex;flex-wrap:nowrap;gap:6px;margin:0;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:2px 0}
+.topnav .menu .tabs::-webkit-scrollbar{display:none}
+.topnav .menu .tabs button{padding:7px 15px;border-radius:999px;font-size:.92rem;white-space:nowrap;flex:none}
+.topnav .menu .aux{flex:none;white-space:nowrap}
+.topnav .brand{flex:none}
+@media (max-width:760px){.topnav{flex-wrap:wrap;gap:6px 10px}.topnav .menu{flex-basis:100%}.topnav .menu .aux{display:none}}
