@@ -7,4 +7,10 @@
 .topnav .menu .tabs button{padding:7px 15px;border-radius:999px;font-size:.92rem;white-space:nowrap;flex:none}
 .topnav .menu .aux{flex:none;white-space:nowrap}
 .topnav .brand{flex:none}
-@media (max-width:760px){.topnav{flex-wrap:wrap;gap:6px 10px}.topnav .menu{flex-basis:100%}.topnav .menu .aux{display:none}}
+.topnav .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);margin:0}
+.topnav .brand .logo{width:34px;height:34px;flex:none}
+.topnav .brand .wm{display:flex;flex-direction:column;line-height:1.1}
+.topnav .brand b{font-family:"Iowan Old Style","Palatino Linotype",Georgia,serif;font-size:1.35rem;letter-spacing:-.01em}
+.topnav .brand small{font:600 .62rem/1.2 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+@media (max-width:1100px){.topnav .brand small{display:none}}
+@media (max-width:760px){.topnav{flex-wrap:wrap;gap:6px 10px}.topnav .menu{flex-basis:100%}.topnav .menu .aux{display:none}.topnav .brand small{display:block}}
